@@ -1,0 +1,15 @@
+# سجل أوامر مشروع Andro.Backend.Reference
+## التاريخ: 28 يناير 2026
+
+### 1. تحديث ABP CLI
+```powershell
+dotnet tool update -g Volo.Abp.Studio.Cli
+```
+
+### 2. إنشاء المشروع
+```powershell
+abp new Andro.Backend.Reference -t app --ui none --database-provider ef --database-management-system sqlserver
+```
+**النتيجة:** ✅ تم إنشاء المشروع بنجاح
+
+---

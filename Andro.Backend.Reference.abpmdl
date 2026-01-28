@@ -1,0 +1,113 @@
+{
+  "template": "app",
+  "imports": {
+    "Volo.Abp.LeptonXLiteTheme": {
+      "version": "5.0.2",
+      "isInstalled": true,
+      "creationTime": "01/28/2026 16:53:02 +00:00"
+    },
+    "Volo.Abp.Account": {
+      "version": "10.0.2",
+      "isInstalled": true,
+      "creationTime": "01/28/2026 16:53:02 +00:00"
+    },
+    "Volo.Abp.OpenIddict": {
+      "version": "10.0.2",
+      "isInstalled": true,
+      "creationTime": "01/28/2026 16:53:02 +00:00"
+    },
+    "Volo.Abp.Identity": {
+      "version": "10.0.2",
+      "isInstalled": true,
+      "creationTime": "01/28/2026 16:53:02 +00:00"
+    },
+    "Volo.Abp.TenantManagement": {
+      "version": "10.0.2",
+      "isInstalled": true,
+      "creationTime": "01/28/2026 16:53:02 +00:00"
+    },
+    "Volo.Abp.SettingManagement": {
+      "version": "10.0.2",
+      "isInstalled": true,
+      "creationTime": "01/28/2026 16:53:02 +00:00"
+    },
+    "Volo.Abp.PermissionManagement": {
+      "version": "10.0.2",
+      "isInstalled": true,
+      "creationTime": "01/28/2026 16:53:02 +00:00"
+    },
+    "Volo.Abp.FeatureManagement": {
+      "version": "10.0.2",
+      "isInstalled": true,
+      "creationTime": "01/28/2026 16:53:02 +00:00"
+    }
+  },
+  "folders": {
+    "items": {
+      "src": {},
+      "test": {}
+    }
+  },
+  "packages": {
+    "Andro.Backend.Reference.Application": {
+      "path": "src/Andro.Backend.Reference.Application/Andro.Backend.Reference.Application.abppkg",
+      "folder": "src"
+    },
+    "Andro.Backend.Reference.Application.Tests": {
+      "path": "test/Andro.Backend.Reference.Application.Tests/Andro.Backend.Reference.Application.Tests.abppkg",
+      "folder": "test"
+    },
+    "Andro.Backend.Reference.Domain.Shared": {
+      "path": "src/Andro.Backend.Reference.Domain.Shared/Andro.Backend.Reference.Domain.Shared.abppkg",
+      "folder": "src"
+    },
+    "Andro.Backend.Reference.Application.Contracts": {
+      "path": "src/Andro.Backend.Reference.Application.Contracts/Andro.Backend.Reference.Application.Contracts.abppkg",
+      "folder": "src"
+    },
+    "Andro.Backend.Reference.HttpApi": {
+      "path": "src/Andro.Backend.Reference.HttpApi/Andro.Backend.Reference.HttpApi.abppkg",
+      "folder": "src"
+    },
+    "Andro.Backend.Reference.HttpApi.Client": {
+      "path": "src/Andro.Backend.Reference.HttpApi.Client/Andro.Backend.Reference.HttpApi.Client.abppkg",
+      "folder": "src"
+    },
+    "Andro.Backend.Reference.Web": {
+      "path": "src/Andro.Backend.Reference.Web/Andro.Backend.Reference.Web.abppkg",
+      "folder": "src"
+    },
+    "Andro.Backend.Reference.Web.Tests": {
+      "path": "test/Andro.Backend.Reference.Web.Tests/Andro.Backend.Reference.Web.Tests.abppkg",
+      "folder": "test"
+    },
+    "Andro.Backend.Reference.EntityFrameworkCore.Tests": {
+      "path": "test/Andro.Backend.Reference.EntityFrameworkCore.Tests/Andro.Backend.Reference.EntityFrameworkCore.Tests.abppkg",
+      "folder": "test"
+    },
+    "Andro.Backend.Reference.EntityFrameworkCore": {
+      "path": "src/Andro.Backend.Reference.EntityFrameworkCore/Andro.Backend.Reference.EntityFrameworkCore.abppkg",
+      "folder": "src"
+    },
+    "Andro.Backend.Reference.TestBase": {
+      "path": "test/Andro.Backend.Reference.TestBase/Andro.Backend.Reference.TestBase.abppkg",
+      "folder": "test"
+    },
+    "Andro.Backend.Reference.Domain.Tests": {
+      "path": "test/Andro.Backend.Reference.Domain.Tests/Andro.Backend.Reference.Domain.Tests.abppkg",
+      "folder": "test"
+    },
+    "Andro.Backend.Reference.HttpApi.Client.ConsoleTestApp": {
+      "path": "test/Andro.Backend.Reference.HttpApi.Client.ConsoleTestApp/Andro.Backend.Reference.HttpApi.Client.ConsoleTestApp.abppkg",
+      "folder": "test"
+    },
+    "Andro.Backend.Reference.DbMigrator": {
+      "path": "src/Andro.Backend.Reference.DbMigrator/Andro.Backend.Reference.DbMigrator.abppkg",
+      "folder": "src"
+    },
+    "Andro.Backend.Reference.Domain": {
+      "path": "src/Andro.Backend.Reference.Domain/Andro.Backend.Reference.Domain.abppkg",
+      "folder": "src"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+<Solution>
+    <Configurations>
+        <Platform Name="Any CPU" />
+    </Configurations>
+    <Folder Name="/src/">
+        <Project Path="src/Andro.Backend.Reference.Domain/Andro.Backend.Reference.Domain.csproj" />
+        <Project Path="src/Andro.Backend.Reference.Application/Andro.Backend.Reference.Application.csproj" />
+        <Project Path="src/Andro.Backend.Reference.EntityFrameworkCore/Andro.Backend.Reference.EntityFrameworkCore.csproj" />
+        <Project Path="src/Andro.Backend.Reference.Web/Andro.Backend.Reference.Web.csproj" />
+        <Project Path="src/Andro.Backend.Reference.Domain.Shared/Andro.Backend.Reference.Domain.Shared.csproj" />
+        <Project Path="src/Andro.Backend.Reference.Application.Contracts/Andro.Backend.Reference.Application.Contracts.csproj" />
+        <Project Path="src/Andro.Backend.Reference.HttpApi/Andro.Backend.Reference.HttpApi.csproj" />
+        <Project Path="src/Andro.Backend.Reference.HttpApi.Client/Andro.Backend.Reference.HttpApi.Client.csproj" />
+        <Project Path="src/Andro.Backend.Reference.DbMigrator/Andro.Backend.Reference.DbMigrator.csproj" />
+    </Folder>
+    <Folder Name="/test/">
+        <Project Path="test/Andro.Backend.Reference.Application.Tests/Andro.Backend.Reference.Application.Tests.csproj" />
+        <Project Path="test/Andro.Backend.Reference.Web.Tests/Andro.Backend.Reference.Web.Tests.csproj" />
+        <Project Path="test/Andro.Backend.Reference.EntityFrameworkCore.Tests/Andro.Backend.Reference.EntityFrameworkCore.Tests.csproj" />
+        <Project Path="test/Andro.Backend.Reference.TestBase/Andro.Backend.Reference.TestBase.csproj" />
+        <Project Path="test/Andro.Backend.Reference.Domain.Tests/Andro.Backend.Reference.Domain.Tests.csproj" />
+        <Project Path="test/Andro.Backend.Reference.HttpApi.Client.ConsoleTestApp/Andro.Backend.Reference.HttpApi.Client.ConsoleTestApp.csproj" />
+    </Folder>
+</Solution>
