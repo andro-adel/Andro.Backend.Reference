@@ -20,7 +20,7 @@
 			"name": "🔐 Authentication",
 			"item": [
 				{
-					"name": "Login (تسجيل الدخول)",
+					"name": "Login - Get Access Token",
 					"event": [
 						{
 							"listen": "test",
@@ -31,8 +31,10 @@
 									"    var jsonData = pm.response.json();",
 									"    pm.environment.set(\"access_token\", jsonData.access_token);",
 									"    pm.environment.set(\"refresh_token\", jsonData.refresh_token);",
+									"    pm.environment.set(\"token_type\", jsonData.token_type);",
+									"    pm.environment.set(\"expires_in\", jsonData.expires_in);",
 									"    console.log(\"✅ تم تسجيل الدخول بنجاح\");",
-									"    console.log(\"Access Token: \" + jsonData.access_token);",
+									"    console.log(\"Token: \" + jsonData.access_token.substring(0, 50) + \"...\");",
 									"}"
 								],
 								"type": "text/javascript"
@@ -47,25 +49,50 @@
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json"
+								"value": "application/x-www-form-urlencoded"
 							}
 						],
 						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"userNameOrEmailAddress\": \"admin\",\n  \"password\": \"1q2w3E*\",\n  \"rememberMe\": true\n}"
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "Reference_App",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "admin",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "1q2w3E*",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "offline_access Reference",
+									"type": "text"
+								}
+							]
 						},
 						"url": {
-							"raw": "{{base_url}}/api/account/login",
+							"raw": "{{base_url}}/connect/token",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
-								"api",
-								"account",
-								"login"
+								"connect",
+								"token"
 							]
 						},
-						"description": "**تسجيل الدخول**\n\n**المستخدم الافتراضي:**\n- Username: `admin`\n- Password: `1q2w3E*`\n\n**الاستجابة:**\n- `access_token`: للتفويض في باقي الطلبات\n- `refresh_token`: لتجديد الـ Token\n- `expires_in`: مدة صلاحية الـ Token (بالثواني)"
+						"description": "**تسجيل الدخول والحصول على Access Token**\n\n**OAuth2 Password Grant**\n\n**المعلومات:**\n- Username: `admin`\n- Password: `1q2w3E*`\n- Client ID: `Reference_App`\n- Scope: `offline_access Reference`\n\n**الاستجابة:**\n- `access_token`: JWT Token للتفويض\n- `refresh_token`: لتجديد الـ Token\n- `expires_in`: مدة الصلاحية (ثواني)\n- `token_type`: Bearer\n\n⚠️ الـ Token يُحفظ تلقائياً في Environment"
 					},
 					"response": [
 						{
@@ -74,23 +101,38 @@
 								"method": "POST",
 								"header": [],
 								"body": {
-									"mode": "raw",
-									"raw": "{\n  \"userNameOrEmailAddress\": \"admin\",\n  \"password\": \"1q2w3E*\",\n  \"rememberMe\": true\n}",
-									"options": {
-										"raw": {
-											"language": "json"
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "grant_type",
+											"value": "password"
+										},
+										{
+											"key": "client_id",
+											"value": "Reference_App"
+										},
+										{
+											"key": "username",
+											"value": "admin"
+										},
+										{
+											"key": "password",
+											"value": "1q2w3E*"
+										},
+										{
+											"key": "scope",
+											"value": "offline_access Reference"
 										}
-									}
+									]
 								},
 								"url": {
-									"raw": "{{base_url}}/api/account/login",
+									"raw": "{{base_url}}/connect/token",
 									"host": [
 										"{{base_url}}"
 									],
 									"path": [
-										"api",
-										"account",
-										"login"
+										"connect",
+										"token"
 									]
 								}
 							},
@@ -99,7 +141,7 @@
 							"_postman_previewlanguage": "json",
 							"header": [],
 							"cookie": [],
-							"body": "{\n    \"access_token\": \"eyJhbGciOiJSUzI1NiIsImtpZCI6IjE...\",\n    \"token_type\": \"Bearer\",\n    \"expires_in\": 3600,\n    \"refresh_token\": \"refresh_token_value\"\n}"
+							"body": "{\n    \"access_token\": \"eyJhbGciOiJSUzI1NiIsImtpZCI6IjE...\",\n    \"token_type\": \"Bearer\",\n    \"expires_in\": 31536000,\n    \"refresh_token\": \"refresh_token_value\",\n    \"scope\": \"offline_access Reference\"\n}"
 						}
 					]
 				},

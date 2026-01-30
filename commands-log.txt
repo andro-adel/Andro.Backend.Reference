@@ -56,4 +56,36 @@ dotnet run
 
 **النتيجة:** ✅ Postman Collection جاهز للاستخدام
 
+### 6. تصحيح وإعادة بناء المشروع
+```powershell
+# إيقاف المشروع القديم
+taskkill /F /PID 34988
+
+# تنظيف المشروع
+dotnet clean
+
+# بناء المشروع
+dotnet build
+
+# تشغيل المشروع
+cd "src/Andro.Backend.Reference.Web"
+dotnet run
+```
+**النتيجة:** ✅ المشروع يعمل بدون مشاكل
+
+### 7. تصحيح Login في Postman Collection
+**المشكلة:** `/api/account/login` لا يرجع `access_token`
+
+**الحل:** استخدام OAuth2 Token endpoint الصحيح
+- Endpoint: `/connect/token`
+- Method: POST (x-www-form-urlencoded)
+- Parameters:
+  - grant_type: password
+  - client_id: Reference_App
+  - username: admin
+  - password: 1q2w3E*
+  - scope: offline_access Reference
+
+**النتيجة:** ✅ يرجع JWT Token صحيح
+
 ---
