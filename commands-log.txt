@@ -12,4 +12,25 @@ abp new Andro.Backend.Reference -t app --ui none --database-provider ef --databa
 ```
 **النتيجة:** ✅ تم إنشاء المشروع بنجاح
 
+### 3. تشغيل DbMigrator لإنشاء قاعدة البيانات
+```powershell
+cd "src/Andro.Backend.Reference.DbMigrator"
+dotnet run
+```
+**الوصف:** يقوم بإنشاء قاعدة البيانات وتطبيق جميع الـ Migrations وإضافة البيانات الأولية (Admin User)
+**النتيجة:** ✅ تم إنشاء قاعدة البيانات بنجاح
+- قاعدة البيانات: `Reference`
+- المستخدم الافتراضي: `admin / 1q2w3E*`
+
+### 4. تشغيل المشروع (Web Application)
+```powershell
+cd "src/Andro.Backend.Reference.Web"
+dotnet run
+```
+**الوصف:** يقوم بتشغيل التطبيق على HTTPS
+**النتيجة:** ✅ المشروع يعمل بنجاح
+- الرابط الرئيسي: `https://localhost:44309`
+- Swagger UI: `https://localhost:44309/swagger`
+- Health Check: `https://localhost:44309/health-status`
+
 ---
