@@ -33,4 +33,27 @@ dotnet run
 - Swagger UI: `https://localhost:44309/swagger`
 - Health Check: `https://localhost:44309/health-status`
 
+### 5. إنشاء Postman Collection
+**الملفات المُنشأة:**
+- `Andro.Backend.Reference.postman_collection.json` - Collection كامل لكل APIs
+- `Andro.Backend.Reference.postman_environment.json` - Environment للمتغيرات
+- `postman-guide.md` - دليل شامل للاستخدام
+
+**المحتويات:**
+- Authentication APIs (Login, Logout, Register)
+- User Profile APIs
+- Application Configuration
+- Identity Management (Users & Roles)
+- Tenant Management
+- Health Check
+- مكان جاهز لـ Products APIs (سيتم إضافتها في المرحلة 2)
+
+**الاستخدام:**
+1. استورد الملفين في Postman
+2. فعل Environment
+3. سجل دخول → Token يحفظ تلقائياً
+4. اختبر أي API
+
+**النتيجة:** ✅ Postman Collection جاهز للاستخدام
+
 ---
