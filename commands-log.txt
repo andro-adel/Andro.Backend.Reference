@@ -157,4 +157,58 @@ dotnet run
 
 **Endpoint:** `/api/app/product`
 
+### 10. إضافة Authorization & Permissions (المرحلة 3)
+
+**الخطوات:**
+
+#### 1. تعريف Permissions
+```
+ملف: src/Andro.Backend.Reference.Application.Contracts/Permissions/ReferencePermissions.cs
+```
+- إضافة `Products.Default`, `Create`, `Edit`, `Delete`
+
+#### 2. Permission Definition Provider
+```
+ملف: src/Andro.Backend.Reference.Application.Contracts/Permissions/ReferencePermissionDefinitionProvider.cs
+```
+- تسجيل Product Permissions
+- إضافة Parent-Child Hierarchy
+
+#### 3. Localization
+```
+ملف: src/Andro.Backend.Reference.Domain.Shared/Localization/Reference/en.json
+```
+- إضافة نصوص الـ Permissions
+
+#### 4. تطبيق Authorization
+```
+ملف: src/Andro.Backend.Reference.Application/Products/ProductAppService.cs
+```
+- إضافة `[Authorize]` attributes على كل method
+- `GetList/Get` → `Products.Default`
+- `Create` → `Products.Create`
+- `Update` → `Products.Edit`
+- `Delete` → `Products.Delete`
+
+#### 5. Data Seeding للـ Permissions
+```
+ملف: src/Andro.Backend.Reference.DbMigrator/ProductPermissionsDataSeedContributor.cs
+```
+- إعطاء Admin Role كل Product Permissions تلقائياً
+
+#### 6. تطبيق Permissions
+```powershell
+cd "src/Andro.Backend.Reference.DbMigrator"
+dotnet run
+```
+**النتيجة:** ✅ Admin Role عنده الآن كل Product Permissions
+
+#### 7. بناء وتشغيل المشروع
+```powershell
+dotnet build
+cd "src/Andro.Backend.Reference.Web"
+dotnet run
+```
+**النتيجة:** ✅ APIs محمية بـ Permissions
+
 ---

@@ -9,10 +9,27 @@ public class ReferencePermissionDefinitionProvider : PermissionDefinitionProvide
 {
     public override void Define(IPermissionDefinitionContext context)
     {
-        var myGroup = context.AddGroup(ReferencePermissions.GroupName);
+        var myGroup = context.AddGroup(ReferencePermissions.GroupName, L("Permission:Reference"));
 
-        //Define your own permissions here. Example:
-        //myGroup.AddPermission(ReferencePermissions.MyPermission1, L("Permission:MyPermission1"));
+        var productsPermission = myGroup.AddPermission(
+            ReferencePermissions.Products.Default,
+            L("Permission:Products")
+        );
+
+        productsPermission.AddChild(
+            ReferencePermissions.Products.Create,
+            L("Permission:Products.Create")
+        );
+
+        productsPermission.AddChild(
+            ReferencePermissions.Products.Edit,
+            L("Permission:Products.Edit")
+        );
+
+        productsPermission.AddChild(
+            ReferencePermissions.Products.Delete,
+            L("Permission:Products.Delete")
+        );
     }
 
     private static LocalizableString L(string name)

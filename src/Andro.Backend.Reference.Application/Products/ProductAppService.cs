@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Andro.Backend.Reference.Permissions;
+using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
@@ -16,12 +18,14 @@ public class ProductAppService : ApplicationService, IProductAppService
         _repository = repository;
     }
 
+    [Authorize(ReferencePermissions.Products.Default)]
     public async Task<ProductDto> GetAsync(Guid id)
     {
         var product = await _repository.GetAsync(id);
         return MapToDto(product);
     }
 
+    [Authorize(ReferencePermissions.Products.Default)]
     public async Task<PagedResultDto<ProductDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
         var totalCount = await _repository.GetCountAsync();
@@ -37,6 +41,7 @@ public class ProductAppService : ApplicationService, IProductAppService
         );
     }
 
+    [Authorize(ReferencePermissions.Products.Create)]
     public async Task<ProductDto> CreateAsync(CreateProductDto input)
     {
         var product = new Product(
@@ -51,6 +56,7 @@ public class ProductAppService : ApplicationService, IProductAppService
         return MapToDto(product);
     }
 
+    [Authorize(ReferencePermissions.Products.Edit)]
     public async Task<ProductDto> UpdateAsync(Guid id, UpdateProductDto input)
     {
         var product = await _repository.GetAsync(id);
@@ -64,6 +70,7 @@ public class ProductAppService : ApplicationService, IProductAppService
         return MapToDto(product);
     }
 
+    [Authorize(ReferencePermissions.Products.Delete)]
     public async Task DeleteAsync(Guid id)
     {
         await _repository.DeleteAsync(id);
