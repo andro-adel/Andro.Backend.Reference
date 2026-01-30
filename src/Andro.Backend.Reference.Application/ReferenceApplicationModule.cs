@@ -1,4 +1,5 @@
-﻿using Volo.Abp.PermissionManagement;
+﻿using Andro.Backend.Reference.Products;
+using Volo.Abp.PermissionManagement;
 using Volo.Abp.SettingManagement;
 using Volo.Abp.Account;
 using Volo.Abp.Identity;
@@ -22,5 +23,4 @@ namespace Andro.Backend.Reference;
     )]
 public class ReferenceApplicationModule : AbpModule
 {
-
 }

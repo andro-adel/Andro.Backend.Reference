@@ -692,9 +692,185 @@
 			"description": "إدارة Tenants (Multi-Tenancy)"
 		},
 		{
-			"name": "📦 Products (سيتم إضافتها لاحقاً)",
-			"item": [],
-			"description": "⏳ سيتم إضافة APIs الـ Products في المرحلة الثانية من خطة التعلم"
+			"name": "📦 Products",
+			"item": [
+				{
+					"name": "Get Products List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/app/product?MaxResultCount=10&SkipCount=0",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"app",
+								"product"
+							],
+							"query": [
+								{
+									"key": "MaxResultCount",
+									"value": "10",
+									"description": "عدد النتائج"
+								},
+								{
+									"key": "SkipCount",
+									"value": "0",
+									"description": "تخطي (للصفحات)"
+								},
+								{
+									"key": "Sorting",
+									"value": "Name",
+									"description": "ترتيب حسب",
+									"disabled": true
+								}
+							]
+						},
+						"description": "**قائمة المنتجات**\n\nيدعم:\n- Pagination (MaxResultCount, SkipCount)\n- Sorting (Name, Price, CreationTime)\n\n⚠️ يتطلب تسجيل الدخول"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product By Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/app/product/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"app",
+								"product",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{product_id}}",
+									"description": "Product ID (Guid)"
+								}
+							]
+						},
+						"description": "**الحصول على منتج محدد**\n\nاحفظ الـ ID من Create Response في متغير `product_id`"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// حفظ Product ID تلقائياً",
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"product_id\", jsonData.id);",
+									"    console.log(\"✅ تم إنشاء المنتج بنجاح\");",
+									"    console.log(\"Product ID: \" + jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Laptop HP\",\n  \"price\": 15000.00,\n  \"stock\": 10,\n  \"description\": \"Laptop HP Pavilion 15 - Intel Core i7\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/app/product",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"app",
+								"product"
+							]
+						},
+						"description": "**إنشاء منتج جديد**\n\n**Required Fields:**\n- name (string, max 128)\n- price (decimal, > 0)\n\n**Optional Fields:**\n- stock (int, default 0)\n- description (string, max 1000)\n\n⚠️ الـ Product ID يُحفظ تلقائياً"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Product",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Laptop HP - Updated\",\n  \"price\": 14500.00,\n  \"stock\": 15,\n  \"description\": \"Laptop HP Pavilion 15 - Intel Core i7 - Special Offer!\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/app/product/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"app",
+								"product",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{product_id}}"
+								}
+							]
+						},
+						"description": "**تحديث منتج**\n\nاستخدم الـ ID المحفوظ من Create أو Get"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Product",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/app/product/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"app",
+								"product",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{product_id}}"
+								}
+							]
+						},
+						"description": "**حذف منتج**\n\n⚠️ Soft Delete - لن يُحذف فعلياً من قاعدة البيانات"
+					},
+					"response": []
+				}
+			],
+			"description": "✅ إدارة المنتجات - CRUD كامل"
 		}
 	],
 	"variable": [

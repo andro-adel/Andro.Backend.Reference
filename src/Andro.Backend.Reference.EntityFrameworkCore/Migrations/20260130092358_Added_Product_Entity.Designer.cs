@@ -4,6 +4,7 @@ using Andro.Backend.Reference.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Volo.Abp.EntityFrameworkCore;
 
@@ -12,9 +13,11 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Andro.Backend.Reference.Migrations
 {
     [DbContext(typeof(ReferenceDbContext))]
-    partial class ReferenceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260130092358_Added_Product_Entity")]
+    partial class Added_Product_Entity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

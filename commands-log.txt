@@ -88,4 +88,73 @@ dotnet run
 
 **النتيجة:** ✅ يرجع JWT Token صحيح
 
+### 8. إنشاء Product Entity (المرحلة 2)
+
+**الخطوات:**
+
+#### 1. إنشاء Product Entity في Domain
+```
+ملف: src/Andro.Backend.Reference.Domain/Products/Product.cs
+```
+- Entity يرث من `FullAuditedAggregateRoot<Guid>`
+- Properties: Name, Price, Stock, Description
+
+#### 2. إضافة DbSet وConfiguration في DbContext
+```
+ملف: src/Andro.Backend.Reference.EntityFrameworkCore/EntityFrameworkCore/ReferenceDbContext.cs
+```
+- إضافة `DbSet<Product> Products`
+- Configuration للـ Table وال Columns
+
+#### 3. إنشاء Migration
+```powershell
+dotnet ef migrations add "Added_Product_Entity" --project src/Andro.Backend.Reference.EntityFrameworkCore/Andro.Backend.Reference.EntityFrameworkCore.csproj --startup-project src/Andro.Backend.Reference.DbMigrator/Andro.Backend.Reference.DbMigrator.csproj
+```
+**النتيجة:** ✅ Migration created
+
+#### 4. تطبيق Migration
+```powershell
+cd "src/Andro.Backend.Reference.DbMigrator"
+dotnet run
+```
+**النتيجة:** ✅ جدول AppProducts تم إنشاؤه في قاعدة البيانات
+
+#### 5. إنشاء DTOs في Application.Contracts
+```
+- ProductDto.cs
+- CreateProductDto.cs
+- UpdateProductDto.cs
+- IProductAppService.cs
+```
+
+#### 6. إنشاء ProductAppService في Application
+```
+ملف: src/Andro.Backend.Reference.Application/Products/ProductAppService.cs
+```
+- يطبق IProductAppService
+- CRUD operations كاملة مع manual mapping
+
+#### 7. بناء المشروع
+```powershell
+dotnet build
+```
+**النتيجة:** ✅ Build succeeded
+
+#### 8. تشغيل المشروع
+```powershell
+cd "src/Andro.Backend.Reference.Web"
+dotnet run
+```
+**النتيجة:** ✅ المشروع يعمل مع Product APIs
+
+### 9. تحديث Postman Collection
+**تم إضافة:**
+- Get Products List (مع Pagination & Sorting)
+- Get Product By Id
+- Create Product (يحفظ product_id تلقائياً)
+- Update Product
+- Delete Product
+
+**Endpoint:** `/api/app/product`
+
 ---

@@ -1,3 +1,4 @@
+using Andro.Backend.Reference.Products;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
@@ -27,6 +28,7 @@ public class ReferenceDbContext :
 {
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
 
+    public DbSet<Product> Products { get; set; }
 
     #region Entities from the modules
 
@@ -78,14 +80,27 @@ public class ReferenceDbContext :
         builder.ConfigureOpenIddict();
         builder.ConfigureTenantManagement();
         builder.ConfigureBlobStoring();
-        
+
         /* Configure your own tables/entities inside here */
 
-        //builder.Entity<YourEntity>(b =>
-        //{
-        //    b.ToTable(ReferenceConsts.DbTablePrefix + "YourEntities", ReferenceConsts.DbSchema);
-        //    b.ConfigureByConvention(); //auto configure for the base class props
-        //    //...
-        //});
+        builder.Entity<Product>(b =>
+        {
+            b.ToTable(ReferenceConsts.DbTablePrefix + "Products", ReferenceConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.Property(x => x.Name)
+                .IsRequired()
+                .HasMaxLength(128);
+
+            b.Property(x => x.Price)
+                .IsRequired()
+                .HasColumnType("decimal(18,2)");
+
+            b.Property(x => x.Stock)
+                .IsRequired();
+
+            b.Property(x => x.Description)
+                .HasMaxLength(1000);
+        });
     }
 }
