@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Andro.Backend.Reference.Categories;
 using Andro.Backend.Reference.Permissions;
+using Andro.Backend.Reference.Products.Specifications;
 using Microsoft.AspNetCore.Authorization;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
@@ -140,7 +142,7 @@ public class ProductAppService : ApplicationService, IProductAppService
         await _repository.DeleteAsync(id);
     }
 
-    private static ProductDto MapToDto(Product product)
+    private ProductDto MapToDto(Product product)
     {
         return new ProductDto
         {
@@ -156,5 +158,57 @@ public class ProductAppService : ApplicationService, IProductAppService
             LastModificationTime = product.LastModificationTime,
             LastModifierId = product.LastModifierId
         };
+    }
+
+    [Authorize(ReferencePermissions.Products.Default)]
+    public async Task<List<ProductDto>> GetLowStockProductsAsync(int threshold = 10)
+    {
+        var specification = new LowStockProductSpecification(threshold);
+
+        var queryable = await _repository.GetQueryableAsync();
+        var products = queryable
+            .Where(specification.ToExpression())
+            .ToList();
+
+        return products.Select(MapToDto).ToList();
+    }
+
+    [Authorize(ReferencePermissions.Products.Default)]
+    public async Task<List<ProductDto>> GetExpensiveProductsAsync(decimal minPrice = 1000)
+    {
+        var specification = new ExpensiveProductSpecification(minPrice);
+
+        var queryable = await _repository.GetQueryableAsync();
+        var products = queryable
+            .Where(specification.ToExpression())
+            .ToList();
+
+        return products.Select(MapToDto).ToList();
+    }
+
+    [Authorize(ReferencePermissions.Products.Default)]
+    public async Task<List<ProductDto>> GetProductsInPriceRangeAsync(decimal minPrice, decimal maxPrice)
+    {
+        var specification = new ProductInPriceRangeSpecification(minPrice, maxPrice);
+
+        var queryable = await _repository.GetQueryableAsync();
+        var products = queryable
+            .Where(specification.ToExpression())
+            .ToList();
+
+        return products.Select(MapToDto).ToList();
+    }
+
+    [Authorize(ReferencePermissions.Products.Default)]
+    public async Task<List<ProductDto>> GetProductsByCategoryAsync(Guid categoryId)
+    {
+        var specification = new ProductByCategorySpecification(categoryId);
+
+        var queryable = await _repository.GetQueryableAsync();
+        var products = queryable
+            .Where(specification.ToExpression())
+            .ToList();
+
+        return products.Select(MapToDto).ToList();
     }
 }
