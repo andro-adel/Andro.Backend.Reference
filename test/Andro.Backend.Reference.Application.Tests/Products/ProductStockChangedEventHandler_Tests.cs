@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Shouldly;
+using Volo.Abp.BackgroundJobs;
 using Xunit;
 
 namespace Andro.Backend.Reference.Products.EventHandlers;
@@ -10,11 +11,13 @@ public class ProductStockChangedEventHandler_Tests : ReferenceApplicationTestBas
 {
     private readonly ProductStockChangedEventHandler _handler;
     private readonly ILogger<ProductStockChangedEventHandler> _logger;
+    private readonly IBackgroundJobManager _backgroundJobManager;
 
     public ProductStockChangedEventHandler_Tests()
     {
         _logger = GetRequiredService<ILogger<ProductStockChangedEventHandler>>();
-        _handler = new ProductStockChangedEventHandler(_logger);
+        _backgroundJobManager = GetRequiredService<IBackgroundJobManager>();
+        _handler = new ProductStockChangedEventHandler(_logger, _backgroundJobManager);
     }
 
     [Fact]

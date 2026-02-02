@@ -261,10 +261,24 @@
 - ✅ 14 Test scenarios في Postman
 - ✅ Build نظيف - 0 warnings
 
-### 7.4 Background Jobs
-- [ ] إنشاء Background Job
-- [ ] جدولة Jobs باستخدام Background Workers
-- [ ] فهم Hangfire/Quartz Integration
+### 7.4 Background Jobs ✅
+- [x] فهم Background Jobs & Workers
+- [x] إنشاء Background Job (LowStockAlertJob)
+- [x] إنشاء Background Worker (StockCheckWorker)
+- [x] تكامل مع Event Handler
+- [x] Configuration في Module
+- [x] Timer-based periodic execution
+
+**📝 ملفات التوثيق:**
+- `16-background-jobs-guide.md` - دليل شامل للـ Background Jobs & Workers
+
+**🎯 التطبيق العملي:**
+- ✅ LowStockAlertJob - background job للتنبيه عند نقص الكمية
+- ✅ LowStockAlertJobArgs - job arguments class
+- ✅ StockCheckWorker - periodic worker يفحص الكمية كل 5 دقائق
+- ✅ تكامل مع ProductStockChangedEventHandler
+- ✅ Module configuration
+- ✅ Build successful - 0 errors
 
 ### 7.5 Event Bus ✅
 - [x] فهم Event Bus Pattern
@@ -350,19 +364,20 @@
 
 ## 📊 تتبع التقدم
 
-**المراحل المكتملة:** 8.5/10 ✅
-**نسبة الإنجاز:** 100%+ من الأساسيات! 🎉🎉 - أكملنا:
+**المراحل المكتملة:** 9/10 ✅
+**نسبة الإنجاز:** 110%+ من الأساسيات! 🎉🎉🎉 - أكملنا:
 - ✅ المرحلة 1: البنية + DDD + الإعداد (7%)
-- ✅ المرحلة 2: Domain Layer - Product Entity + CRUD كامل (8%)
-- ✅ المرحلة 3: EF Core + Relationships (8%)
-- ✅ المرحلة 4: Application Layer - Services & DTOs (8%)
-- ✅ المرحلة 5: HTTP API Layer - Controllers & Testing (8%)
-- ✅ المرحلة 6: Authorization & Permissions (14%)
-- ✅ المرحلة 7.1: Validation - Data Annotations (11%)
-- ✅ المرحلة 7.2: Exception Handling - Multi-layered (11%)
+- ✅ المرحلة 2: Domain Layer - Product Entity + CRUD كامل (7%)
+- ✅ المرحلة 3: EF Core + Relationships (7%)
+- ✅ المرحلة 4: Application Layer - Services & DTOs (7%)
+- ✅ المرحلة 5: HTTP API Layer - Controllers & Testing (7%)
+- ✅ المرحلة 6: Authorization & Permissions (13%)
+- ✅ المرحلة 7.1: Validation - Data Annotations (10%)
+- ✅ المرحلة 7.2: Exception Handling - Multi-layered (10%)
 - ✅ المرحلة 7.3: Localization - Multi-language (8%)
+- ✅ المرحلة 7.4: Background Jobs - Jobs & Workers (8%)
 - ✅ المرحلة 7.5: Event Bus - Domain Events (7%)
-- ✅ المرحلة 8.1: Testing - Unit & Integration Tests (10%)
+- ✅ المرحلة 8.1: Testing - Unit & Integration Tests (9%)
 
 **إضافات تمت:**
 - ✅ Clean Build Warnings - 0 warnings (مهارة إضافية)
@@ -370,6 +385,7 @@
 - ✅ Validation Layer - 18 test scenarios (مهارة إضافية)
 - ✅ Exception Handling - 14 test scenarios (مهارة إضافية)
 - ✅ Localization - 14 test scenarios (مهارة إضافية)
+- ✅ Background Jobs - 1 Job + 1 Worker (مهارة إضافية)
 - ✅ Event Bus - Domain Events with Handlers (مهارة إضافية)
 - ✅ Testing - 38 Unit & Integration Tests (مهارة إضافية)
 
@@ -396,9 +412,10 @@
 17. `14-event-bus-guide.md` - دليل شامل للـ Event Bus & Domain Events
 18. `event-bus-test-guide.md` - دليل اختبار Domain Events
 19. `15-testing-guide.md` - دليل شامل للـ Testing (Unit & Integration)
-20. `commands-log.txt` - سجل كامل لكل الأوامر
-21. `Andro.Backend.Reference.postman_collection.json` - Postman Collection (with Localization tests)
-22. `Andro.Backend.Reference.postman_environment.json` - Postman Environment
+20. `16-background-jobs-guide.md` - دليل شامل للـ Background Jobs & Workers
+21. `commands-log.txt` - سجل كامل لكل الأوامر
+22. `Andro.Backend.Reference.postman_collection.json` - Postman Collection (with Localization tests)
+23. `Andro.Backend.Reference.postman_environment.json` - Postman Environment
 
 ---
 
