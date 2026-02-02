@@ -1041,6 +1041,472 @@
 				}
 			],
 			"description": "✅ إدارة التصنيفات - CRUD كامل - One-to-Many مع Products"
+		},
+		{
+			"name": "🌍 Localization Tests",
+			"item": [
+				{
+					"name": "🇬🇧 English Tests",
+					"item": [
+						{
+							"name": "1. Category Not Found (EN)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept-Language",
+										"value": "en-US",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Test Product\",\n  \"price\": 100,\n  \"stock\": 10,\n  \"categoryId\": \"00000000-0000-0000-0000-000000000000\",\n  \"description\": \"Testing English localization\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/app/product",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"app",
+										"product"
+									]
+								},
+								"description": "**Expected:** 403 Forbidden\n**Message:** \"Category not found\""
+							},
+							"response": []
+						},
+						{
+							"name": "2. Duplicate Product (EN)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept-Language",
+										"value": "en-US",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Laptop Pro 15\",\n  \"price\": 100,\n  \"stock\": 10,\n  \"categoryId\": \"{{category_id}}\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/app/product",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"app",
+										"product"
+									]
+								},
+								"description": "**Expected:** 403 Forbidden\n**Message:** \"A product with this name already exists\""
+							},
+							"response": []
+						},
+						{
+							"name": "3. Invalid Price (EN)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept-Language",
+										"value": "en-US",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Test Invalid Price\",\n  \"price\": 2000000,\n  \"stock\": 10,\n  \"categoryId\": \"{{category_id}}\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/app/product",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"app",
+										"product"
+									]
+								},
+								"description": "**Expected:** 403 Forbidden\n**Message:** \"Invalid product price. Price must be between 0.01 and 1000000\""
+							},
+							"response": []
+						},
+						{
+							"name": "4. Invalid Stock (EN)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept-Language",
+										"value": "en-US",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Test Invalid Stock\",\n  \"price\": 99.99,\n  \"stock\": 200000,\n  \"categoryId\": \"{{category_id}}\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/app/product",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"app",
+										"product"
+									]
+								},
+								"description": "**Expected:** 403 Forbidden\n**Message:** \"Invalid stock quantity. Stock must be between 0 and 100000\""
+							},
+							"response": []
+						},
+						{
+							"name": "5. Duplicate Category (EN)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept-Language",
+										"value": "en-US",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Electronics\",\n  \"description\": \"Testing English\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/app/category",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"app",
+										"category"
+									]
+								},
+								"description": "**Expected:** 403 Forbidden\n**Message:** \"A category with this name already exists\""
+							},
+							"response": []
+						},
+						{
+							"name": "6. Category Has Products (EN)",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept-Language",
+										"value": "en-US",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/app/category/{{category_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"app",
+										"category",
+										"{{category_id}}"
+									]
+								},
+								"description": "**Expected:** 403 Forbidden\n**Message:** \"Cannot delete category because it has products\""
+							},
+							"response": []
+						},
+						{
+							"name": "7. Entity Not Found (EN)",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept-Language",
+										"value": "en-US",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/app/product/00000000-0000-0000-0000-000000000000",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"app",
+										"product",
+										"00000000-0000-0000-0000-000000000000"
+									]
+								},
+								"description": "**Expected:** 404 Not Found\n**Message:** \"There is no such an entity...\""
+							},
+							"response": []
+						}
+					],
+					"description": "**English Localization Tests 🇬🇧**\n\nAll error messages should be in English."
+				},
+				{
+					"name": "🇸🇦 Arabic Tests",
+					"item": [
+						{
+							"name": "1. Category Not Found (AR)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept-Language",
+										"value": "ar-SA",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"منتج تجريبي\",\n  \"price\": 100,\n  \"stock\": 10,\n  \"categoryId\": \"00000000-0000-0000-0000-000000000000\",\n  \"description\": \"اختبار الترجمة العربية\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/app/product",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"app",
+										"product"
+									]
+								},
+								"description": "**Expected:** 403 Forbidden\n**Message:** \"التصنيف غير موجود\""
+							},
+							"response": []
+						},
+						{
+							"name": "2. Duplicate Product (AR)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept-Language",
+										"value": "ar-SA",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Laptop Pro 15\",\n  \"price\": 100,\n  \"stock\": 10,\n  \"categoryId\": \"{{category_id}}\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/app/product",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"app",
+										"product"
+									]
+								},
+								"description": "**Expected:** 403 Forbidden\n**Message:** \"يوجد منتج بنفس الاسم بالفعل\""
+							},
+							"response": []
+						},
+						{
+							"name": "3. Invalid Price (AR)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept-Language",
+										"value": "ar-SA",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"منتج بسعر خاطئ\",\n  \"price\": 2000000,\n  \"stock\": 10,\n  \"categoryId\": \"{{category_id}}\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/app/product",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"app",
+										"product"
+									]
+								},
+								"description": "**Expected:** 403 Forbidden\n**Message:** \"سعر المنتج غير صحيح. يجب أن يكون السعر بين 0.01 و 1000000\""
+							},
+							"response": []
+						},
+						{
+							"name": "4. Invalid Stock (AR)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept-Language",
+										"value": "ar-SA",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"منتج بكمية خاطئة\",\n  \"price\": 99.99,\n  \"stock\": 200000,\n  \"categoryId\": \"{{category_id}}\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/app/product",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"app",
+										"product"
+									]
+								},
+								"description": "**Expected:** 403 Forbidden\n**Message:** \"الكمية غير صحيحة. يجب أن تكون الكمية بين 0 و 100000\""
+							},
+							"response": []
+						},
+						{
+							"name": "5. Duplicate Category (AR)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept-Language",
+										"value": "ar-SA",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Electronics\",\n  \"description\": \"اختبار العربية\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/api/app/category",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"app",
+										"category"
+									]
+								},
+								"description": "**Expected:** 403 Forbidden\n**Message:** \"يوجد تصنيف بنفس الاسم بالفعل\""
+							},
+							"response": []
+						},
+						{
+							"name": "6. Category Has Products (AR)",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept-Language",
+										"value": "ar-SA",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/app/category/{{category_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"app",
+										"category",
+										"{{category_id}}"
+									]
+								},
+								"description": "**Expected:** 403 Forbidden\n**Message:** \"لا يمكن حذف التصنيف لأنه يحتوي على منتجات\""
+							},
+							"response": []
+						},
+						{
+							"name": "7. Entity Not Found (AR)",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept-Language",
+										"value": "ar-SA",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/api/app/product/00000000-0000-0000-0000-000000000000",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"api",
+										"app",
+										"product",
+										"00000000-0000-0000-0000-000000000000"
+									]
+								},
+								"description": "**Expected:** 404 Not Found\n**Message:** ABP built-in message"
+							},
+							"response": []
+						}
+					],
+					"description": "**Arabic Localization Tests 🇸🇦**\n\nAll error messages should be in Arabic."
+				}
+			],
+			"description": "**🌍 Localization Tests**\n\n**14 Test Scenarios:**\n- 7 English tests 🇬🇧\n- 7 Arabic tests 🇸🇦\n\n**How to test:**\n1. Login first to get access token\n2. Run English tests - check messages are in English\n3. Run Arabic tests - check messages are in Arabic\n\n**Key Header:**\n- `Accept-Language: en-US` for English\n- `Accept-Language: ar-SA` for Arabic\n\n**Expected Results:**\n- Error messages should be translated\n- Same error code, different message\n- Business exceptions should be localized"
 		}
 	],
 	"variable": [

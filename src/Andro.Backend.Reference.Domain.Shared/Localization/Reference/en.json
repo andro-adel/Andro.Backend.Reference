@@ -9,6 +9,27 @@
     "Permission:Products": "Product Management",
     "Permission:Products.Create": "Create Products",
     "Permission:Products.Edit": "Edit Products",
-    "Permission:Products.Delete": "Delete Products"
+    "Permission:Products.Delete": "Delete Products",
+    "Permission:Categories": "Category Management",
+    "Permission:Categories.Create": "Create Categories",
+    "Permission:Categories.Edit": "Edit Categories",
+    "Permission:Categories.Delete": "Delete Categories",
+    "Product": "Product",
+    "Products": "Products",
+    "ProductName": "Product Name",
+    "ProductPrice": "Price",
+    "ProductStock": "Stock",
+    "ProductDescription": "Description",
+    "Category": "Category",
+    "Categories": "Categories",
+    "CategoryName": "Category Name",
+    "Reference:CategoryNotFound": "Category not found",
+    "Reference:DuplicateCategoryName": "A category with this name already exists",
+    "Reference:CategoryHasProducts": "Cannot delete category because it has products",
+    "Reference:InvalidProductPrice": "Invalid product price. Price must be between {MinPrice} and {MaxPrice}",
+    "Reference:InvalidProductStock": "Invalid stock quantity. Stock must be between {MinStock} and {MaxStock}",
+    "Reference:DuplicateProductName": "A product with this name already exists",
+    "Reference:InsufficientStock": "Insufficient stock available. Requested: {RequestedQuantity}, Available: {AvailableStock}",
+    "Reference:InvalidCategoryName": "Invalid category name"
   }
 }

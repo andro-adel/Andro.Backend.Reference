@@ -987,4 +987,266 @@ Success (200/204)
 ✅ **Build نظيف 0 warnings**
 ✅ **جاهز للاختبار في Postman!**
 
+### 16. تطبيق Localization (تعدد اللغات) على المشروع
+
+**الملف التوثيقي:** `13-localization-guide.md`
+**Test Scenarios:** `localization-test-scenarios.md`
+
+#### الخطوات:
+
+**1. تحديث ملف en.json - الإنجليزية**
+```json
+// Domain.Shared/Localization/Reference/en.json
+{
+  "Culture": "en",
+  "Texts": {
+    "Permission:Reference": "Reference Permissions",
+    "Permission:Products": "Product Management",
+    "Permission:Products.Create": "Create Products",
+    "Permission:Products.Edit": "Edit Products",
+    "Permission:Products.Delete": "Delete Products",
+    "Permission:Categories": "Category Management",
+    "Permission:Categories.Create": "Create Categories",
+    "Permission:Categories.Edit": "Edit Categories",
+    "Permission:Categories.Delete": "Delete Categories",
+
+    "Product": "Product",
+    "Products": "Products",
+    "ProductName": "Product Name",
+    "ProductPrice": "Price",
+    "ProductStock": "Stock",
+
+    "Category": "Category",
+    "Categories": "Categories",
+    "CategoryName": "Category Name",
+
+    "Reference:CategoryNotFound": "Category not found",
+    "Reference:DuplicateCategoryName": "A category with this name already exists",
+    "Reference:CategoryHasProducts": "Cannot delete category because it has products",
+    "Reference:InvalidProductPrice": "Invalid product price. Price must be between {MinPrice} and {MaxPrice}",
+    "Reference:InvalidProductStock": "Invalid stock quantity. Stock must be between {MinStock} and {MaxStock}",
+    "Reference:DuplicateProductName": "A product with this name already exists",
+    "Reference:InsufficientStock": "Insufficient stock available. Requested: {RequestedQuantity}, Available: {AvailableStock}"
+  }
+}
+```
+
+**2. تحديث ملف ar.json - العربية**
+```json
+// Domain.Shared/Localization/Reference/ar.json
+{
+  "culture": "ar",
+  "texts": {
+    "Permission:Reference": "صلاحيات المشروع",
+    "Permission:Products": "إدارة المنتجات",
+    "Permission:Products.Create": "إنشاء منتجات",
+    "Permission:Products.Edit": "تعديل منتجات",
+    "Permission:Products.Delete": "حذف منتجات",
+    "Permission:Categories": "إدارة التصنيفات",
+    "Permission:Categories.Create": "إنشاء تصنيفات",
+    "Permission:Categories.Edit": "تعديل تصنيفات",
+    "Permission:Categories.Delete": "حذف تصنيفات",
+
+    "Product": "منتج",
+    "Products": "المنتجات",
+    "ProductName": "اسم المنتج",
+    "ProductPrice": "السعر",
+    "ProductStock": "الكمية",
+
+    "Category": "تصنيف",
+    "Categories": "التصنيفات",
+    "CategoryName": "اسم التصنيف",
+
+    "Reference:CategoryNotFound": "التصنيف غير موجود",
+    "Reference:DuplicateCategoryName": "يوجد تصنيف بنفس الاسم بالفعل",
+    "Reference:CategoryHasProducts": "لا يمكن حذف التصنيف لأنه يحتوي على منتجات",
+    "Reference:InvalidProductPrice": "سعر المنتج غير صحيح. يجب أن يكون السعر بين {MinPrice} و {MaxPrice}",
+    "Reference:InvalidProductStock": "الكمية غير صحيحة. يجب أن تكون الكمية بين {MinStock} و {MaxStock}",
+    "Reference:DuplicateProductName": "يوجد منتج بنفس الاسم بالفعل",
+    "Reference:InsufficientStock": "الكمية المتوفرة غير كافية. المطلوب: {RequestedQuantity}، المتوفر: {AvailableStock}"
+  }
+}
+```
+
+**3. Build المشروع**
+```powershell
+# إيقاف API إذا كان يعمل
+Get-Process | Where-Object {$_.ProcessName -like '*Andro.Backend.Reference.Web*'} | Stop-Process -Force
+
+# Build
+dotnet build
+```
+
+**النتيجة:**
+```
+Build succeeded.
+    0 Warning(s) ✅
+    0 Error(s) ✅
+Time Elapsed 00:00:18
+```
+
+**4. تشغيل API واختبار Localization**
+```powershell
+cd src\Andro.Backend.Reference.Web
+dotnet run
+```
+
+**API متاح على:** `https://localhost:44309`
+
+#### Test Scenarios (14 سيناريو):
+
+**Postman Tests:**
+
+**English Tests (🇬🇧):**
+1. ❌ Category not found (EN) → 403 "Category not found"
+2. ❌ Duplicate product (EN) → 403 "A product with this name already exists"
+3. ❌ Invalid price (EN) → 403 "Invalid product price. Price must be between..."
+4. ❌ Invalid stock (EN) → 403 "Invalid stock quantity..."
+5. ❌ Duplicate category (EN) → 403 "A category with this name already exists"
+6. ❌ Category has products (EN) → 403 "Cannot delete category because it has products"
+7. ❌ Entity not found (EN) → 404 "There is no such an entity..."
+
+**Arabic Tests (🇸🇦):**
+8. ❌ Category not found (AR) → 403 "التصنيف غير موجود"
+9. ❌ Duplicate product (AR) → 403 "يوجد منتج بنفس الاسم بالفعل"
+10. ❌ Invalid price (AR) → 403 "سعر المنتج غير صحيح..."
+11. ❌ Invalid stock (AR) → 403 "الكمية غير صحيحة..."
+12. ❌ Duplicate category (AR) → 403 "يوجد تصنيف بنفس الاسم بالفعل"
+13. ❌ Category has products (AR) → 403 "لا يمكن حذف التصنيف لأنه يحتوي على منتجات"
+14. ❌ Entity not found (AR) → 404 (ABP built-in message)
+
+#### كيف يتم تغيير اللغة:
+
+**الطريقة 1: Accept-Language Header** ⭐ (الأفضل)
+```http
+POST /api/app/product
+Authorization: Bearer {{access_token}}
+Accept-Language: ar-SA
+```
+
+**الطريقة 2: Query String**
+```http
+GET /api/app/product?culture=ar-SA
+```
+
+**الطريقة 3: Cookie**
+```http
+Cookie: Abp.Culture=c=ar-SA|uic=ar-SA
+```
+
+#### Localization Flow:
+
+```
+Request with Accept-Language header
+  ↓
+ABP reads header (ar-SA / en-US)
+  ↓
+Sets CurrentCulture
+  ↓
+BusinessException thrown with error code
+  ↓
+ABP looks up code in Localization JSON files
+  ↓
+Returns message in requested language
+  ↓
+Response with localized error message
+```
+
+#### الفوائد:
+
+**✅ Multi-language Support:**
+- دعم العربية والإنجليزية كاملاً
+- سهل إضافة لغات جديدة
+- ABP يدعم 20+ لغة
+
+**✅ Better User Experience:**
+- المستخدم يرى كل شيء بلغته
+- رسائل خطأ واضحة بلغته
+- Permissions مترجمة
+
+**✅ Centralized Management:**
+- كل النصوص في JSON files
+- سهل التعديل والصيانة
+- لا hard-coded strings في الكود
+
+**✅ Professional:**
+- تطبيق عالمي جاهز
+- يحترم ثقافة المستخدم
+- Production-ready
+
+**✅ Automatic:**
+- ABP يترجم تلقائياً
+- لا حاجة لكود إضافي
+- يعمل مع كل BusinessException
+
+#### الملفات المعدلة:
+
+**ملفات جديدة:**
+1. `13-localization-guide.md` - دليل شامل
+2. `localization-test-scenarios.md` - 14 test scenario
+
+**ملفات معدلة:**
+3. `en.json` - إضافة Error Codes و Permissions و Labels
+4. `ar.json` - إضافة الترجمة العربية الكاملة
+
+#### Supported Languages في ABP:
+
+```
+✅ en (English) - مطبقة كاملاً
+✅ ar (Arabic) - مطبقة كاملاً
+🟡 de-DE (German) - ملف موجود، يحتاج ترجمة
+🟡 fr (French) - ملف موجود، يحتاج ترجمة
+🟡 es (Spanish) - ملف موجود، يحتاج ترجمة
+... (15+ لغة أخرى)
+```
+
+#### مثال: نفس الخطأ بلغتين
+
+**English Request:**
+```http
+POST /api/app/product
+Accept-Language: en-US
+
+{"name": "Test", "categoryId": "00000000-0000-0000-0000-000000000000", ...}
+```
+
+**Response:**
+```json
+{
+  "error": {
+    "code": "Reference:CategoryNotFound",
+    "message": "Category not found"
+  }
+}
+```
+
+**Arabic Request:**
+```http
+POST /api/app/product
+Accept-Language: ar-SA
+
+{"name": "Test", "categoryId": "00000000-0000-0000-0000-000000000000", ...}
+```
+
+**Response:**
+```json
+{
+  "error": {
+    "code": "Reference:CategoryNotFound",
+    "message": "التصنيف غير موجود"
+  }
+}
+```
+
+#### الخلاصة:
+
+✅ **Localization Layer كامل ومطبق**
+✅ **14 Test Scenarios جاهزة (7 EN + 7 AR)**
+✅ **كل Error Codes مترجمة**
+✅ **Permissions مترجمة**
+✅ **Multi-language support جاهز**
+✅ **Automatic translation من ABP**
+✅ **Build نظيف 0 warnings**
+✅ **جاهز للاختبار في Postman!**
+
 ---
