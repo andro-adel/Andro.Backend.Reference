@@ -1,10 +1,13 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Andro.Backend.Reference.Categories;
 using Andro.Backend.Reference.Permissions;
 using Microsoft.AspNetCore.Authorization;
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
+using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
 
 namespace Andro.Backend.Reference.Products;
@@ -12,16 +15,26 @@ namespace Andro.Backend.Reference.Products;
 public class ProductAppService : ApplicationService, IProductAppService
 {
     private readonly IRepository<Product, Guid> _repository;
+    private readonly IRepository<Category, Guid> _categoryRepository;
 
-    public ProductAppService(IRepository<Product, Guid> repository)
+    public ProductAppService(
+        IRepository<Product, Guid> repository,
+        IRepository<Category, Guid> categoryRepository)
     {
         _repository = repository;
+        _categoryRepository = categoryRepository;
     }
 
     [Authorize(ReferencePermissions.Products.Default)]
     public async Task<ProductDto> GetAsync(Guid id)
     {
-        var product = await _repository.GetAsync(id, includeDetails: true);
+        var product = await _repository.FindAsync(id, includeDetails: true);
+
+        if (product == null)
+        {
+            throw new EntityNotFoundException(typeof(Product), id);
+        }
+
         return MapToDto(product);
     }
 
@@ -40,6 +53,24 @@ public class ProductAppService : ApplicationService, IProductAppService
     [Authorize(ReferencePermissions.Products.Create)]
     public async Task<ProductDto> CreateAsync(CreateProductDto input)
     {
+        // Check if category exists
+        var categoryExists = await _categoryRepository.AnyAsync(c => c.Id == input.CategoryId);
+        if (!categoryExists)
+        {
+            throw new BusinessException(ReferenceDomainErrorCodes.CategoryNotFound)
+                .WithData("CategoryId", input.CategoryId);
+        }
+
+        // Check for duplicate product name
+        var existingProduct = await _repository
+            .FirstOrDefaultAsync(p => p.Name == input.Name);
+
+        if (existingProduct != null)
+        {
+            throw new BusinessException(ReferenceDomainErrorCodes.DuplicateProductName)
+                .WithData("ProductName", input.Name);
+        }
+
         var product = new Product(
             GuidGenerator.Create(),
             input.Name,
@@ -58,9 +89,28 @@ public class ProductAppService : ApplicationService, IProductAppService
     {
         var product = await _repository.GetAsync(id, includeDetails: true);
 
-        product.Name = input.Name;
-        product.Price = input.Price;
-        product.Stock = input.Stock;
+        // Check if category exists
+        var categoryExists = await _categoryRepository.AnyAsync(c => c.Id == input.CategoryId);
+        if (!categoryExists)
+        {
+            throw new BusinessException(ReferenceDomainErrorCodes.CategoryNotFound)
+                .WithData("CategoryId", input.CategoryId);
+        }
+
+        // Check for duplicate name (excluding current product)
+        var existingProduct = await _repository
+            .FirstOrDefaultAsync(p => p.Name == input.Name && p.Id != id);
+
+        if (existingProduct != null)
+        {
+            throw new BusinessException(ReferenceDomainErrorCodes.DuplicateProductName)
+                .WithData("ProductName", input.Name);
+        }
+
+        // Use setter methods (Domain validation happens here)
+        product.SetName(input.Name);
+        product.SetPrice(input.Price);
+        product.SetStock(input.Stock);
         product.CategoryId = input.CategoryId;
         product.Description = input.Description;
 

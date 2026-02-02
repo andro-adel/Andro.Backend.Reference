@@ -7,11 +7,11 @@ namespace Andro.Backend.Reference.Products;
 
 public class Product : FullAuditedAggregateRoot<Guid>
 {
-    public string Name { get; set; } = string.Empty;
+    public string Name { get; private set; } = string.Empty;
 
-    public decimal Price { get; set; }
+    public decimal Price { get; private set; }
 
-    public int Stock { get; set; }
+    public int Stock { get; private set; }
 
     public string? Description { get; set; }
 
@@ -32,10 +32,72 @@ public class Product : FullAuditedAggregateRoot<Guid>
         Guid categoryId,
         string? description = null) : base(id)
     {
-        Name = Check.NotNullOrWhiteSpace(name, nameof(name), 128);
-        Price = price;
-        Stock = stock;
+        SetName(name);
+        SetPrice(price);
+        SetStock(stock);
         CategoryId = categoryId;
         Description = description;
+    }
+
+    public void SetName(string name)
+    {
+        Name = Check.NotNullOrWhiteSpace(
+            name,
+            nameof(name),
+            ProductConsts.MaxNameLength
+        );
+    }
+
+    public void SetPrice(decimal price)
+    {
+        if (price < ProductConsts.MinPrice || price > ProductConsts.MaxPrice)
+        {
+            throw new BusinessException(ReferenceDomainErrorCodes.InvalidProductPrice)
+                .WithData("Price", price)
+                .WithData("MinPrice", ProductConsts.MinPrice)
+                .WithData("MaxPrice", ProductConsts.MaxPrice);
+        }
+
+        Price = price;
+    }
+
+    public void SetStock(int stock)
+    {
+        if (stock < ProductConsts.MinStock || stock > ProductConsts.MaxStock)
+        {
+            throw new BusinessException(ReferenceDomainErrorCodes.InvalidProductStock)
+                .WithData("Stock", stock)
+                .WithData("MinStock", ProductConsts.MinStock)
+                .WithData("MaxStock", ProductConsts.MaxStock);
+        }
+
+        Stock = stock;
+    }
+
+    public void DecreaseStock(int quantity)
+    {
+        if (quantity <= 0)
+        {
+            throw new BusinessException(ReferenceDomainErrorCodes.InvalidProductStock)
+                .WithData("Quantity", quantity);
+        }
+
+        if (Stock < quantity)
+        {
+            throw new InsufficientStockException(Name, quantity, Stock);
+        }
+
+        Stock -= quantity;
+    }
+
+    public void IncreaseStock(int quantity)
+    {
+        if (quantity <= 0)
+        {
+            throw new BusinessException(ReferenceDomainErrorCodes.InvalidProductStock)
+                .WithData("Quantity", quantity);
+        }
+
+        Stock += quantity;
     }
 }

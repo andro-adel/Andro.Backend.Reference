@@ -692,4 +692,299 @@ Request → ABP Interceptor
 ✅ **Build نظيف 0 warnings**
 ✅ **جاهز للاختبار في Postman!**
 
+### 15. تطبيق Exception Handling شامل على المشروع
+
+**الملف التوثيقي:** `12-exception-handling-guide.md`
+**Test Scenarios:** `exception-handling-test-scenarios.md`
+
+#### الخطوات:
+
+**1. إنشاء Custom Business Exception**
+```csharp
+// InsufficientStockException.cs
+namespace Andro.Backend.Reference.Products;
+
+public class InsufficientStockException : BusinessException
+{
+    public InsufficientStockException(
+        string productName,
+        int requestedQuantity,
+        int availableStock)
+        : base(ReferenceDomainErrorCodes.InsufficientStock)
+    {
+        WithData("ProductName", productName);
+        WithData("RequestedQuantity", requestedQuantity);
+        WithData("AvailableStock", availableStock);
+    }
+}
+```
+
+**2. تحديث Product Entity - Domain Validation**
+```csharp
+// Product.cs - تحويل Properties إلى private set
+public string Name { get; private set; } = string.Empty;
+public decimal Price { get; private set; }
+public int Stock { get; private set; }
+
+// إضافة Setter Methods مع Domain Validation
+public void SetPrice(decimal price)
+{
+    if (price < ProductConsts.MinPrice || price > ProductConsts.MaxPrice)
+    {
+        throw new BusinessException(ReferenceDomainErrorCodes.InvalidProductPrice)
+            .WithData("Price", price)
+            .WithData("MinPrice", ProductConsts.MinPrice)
+            .WithData("MaxPrice", ProductConsts.MaxPrice);
+    }
+    Price = price;
+}
+
+public void SetStock(int stock)
+{
+    if (stock < ProductConsts.MinStock || stock > ProductConsts.MaxStock)
+    {
+        throw new BusinessException(ReferenceDomainErrorCodes.InvalidProductStock)
+            .WithData("Stock", stock)
+            .WithData("MinStock", ProductConsts.MinStock)
+            .WithData("MaxStock", ProductConsts.MaxStock);
+    }
+    Stock = stock;
+}
+
+public void DecreaseStock(int quantity)
+{
+    if (quantity <= 0)
+    {
+        throw new BusinessException(ReferenceDomainErrorCodes.InvalidProductStock)
+            .WithData("Quantity", quantity);
+    }
+
+    if (Stock < quantity)
+    {
+        throw new InsufficientStockException(Name, quantity, Stock);
+    }
+
+    Stock -= quantity;
+}
+```
+
+**3. تحديث ProductAppService - Business Exceptions**
+```csharp
+// ProductAppService.cs
+public async Task<ProductDto> CreateAsync(CreateProductDto input)
+{
+    // Check if category exists
+    var categoryExists = await _categoryRepository.AnyAsync(c => c.Id == input.CategoryId);
+    if (!categoryExists)
+    {
+        throw new BusinessException(ReferenceDomainErrorCodes.CategoryNotFound)
+            .WithData("CategoryId", input.CategoryId);
+    }
+
+    // Check for duplicate product name
+    var existingProduct = await _repository
+        .FirstOrDefaultAsync(p => p.Name == input.Name);
+
+    if (existingProduct != null)
+    {
+        throw new BusinessException(ReferenceDomainErrorCodes.DuplicateProductName)
+            .WithData("ProductName", input.Name);
+    }
+
+    var product = new Product(/* ... */);
+    await _repository.InsertAsync(product);
+    return MapToDto(product);
+}
+
+public async Task<ProductDto> GetAsync(Guid id)
+{
+    var product = await _repository.FindAsync(id, includeDetails: true);
+
+    if (product == null)
+    {
+        throw new EntityNotFoundException(typeof(Product), id);
+    }
+
+    return MapToDto(product);
+}
+```
+
+**4. تحديث CategoryAppService - Business Exceptions**
+```csharp
+// CategoryAppService.cs
+public async Task DeleteAsync(Guid id)
+{
+    var category = await _repository.GetAsync(id);
+
+    // Check if category has products
+    var hasProducts = await _productRepository.AnyAsync(p => p.CategoryId == id);
+
+    if (hasProducts)
+    {
+        throw new BusinessException(ReferenceDomainErrorCodes.CategoryHasProducts)
+            .WithData("CategoryName", category.Name)
+            .WithData("CategoryId", id);
+    }
+
+    await _repository.DeleteAsync(category);
+}
+
+public async Task<CategoryDto> CreateAsync(CreateCategoryDto input)
+{
+    // Check for duplicate category name
+    var existingCategory = await _repository
+        .FirstOrDefaultAsync(c => c.Name == input.Name);
+
+    if (existingCategory != null)
+    {
+        throw new BusinessException(ReferenceDomainErrorCodes.DuplicateCategoryName)
+            .WithData("CategoryName", input.Name);
+    }
+
+    var category = new Category(/* ... */);
+    await _repository.InsertAsync(category);
+    return MapToDto(category);
+}
+```
+
+**5. Build المشروع**
+```powershell
+dotnet build
+```
+
+**النتيجة:**
+```
+Build succeeded.
+    0 Warning(s) ✅
+    0 Error(s) ✅
+Time Elapsed 00:00:23
+```
+
+**6. تشغيل API واختبار Exceptions**
+```powershell
+cd src\Andro.Backend.Reference.Web
+dotnet run
+```
+
+**API متاح على:** `https://localhost:44309`
+
+#### Test Scenarios (14 سيناريو):
+
+**Postman Tests:**
+1. ❌ Product not found → 404 EntityNotFoundException
+2. ❌ Category not found → 403 BusinessException
+3. ❌ Duplicate product name → 403 BusinessException
+4. ❌ Invalid price (domain validation) → 403 BusinessException
+5. ❌ Invalid stock (domain validation) → 403 BusinessException
+6. ❌ Update with invalid category → 403 BusinessException
+7. ❌ Update with duplicate name → 403 BusinessException
+8. ✅ Valid product creation → 200 Success
+9. ❌ Category not found → 404 EntityNotFoundException
+10. ❌ Duplicate category name → 403 BusinessException
+11. ❌ Delete category with products → 403 BusinessException
+12. ❌ Update category duplicate name → 403 BusinessException
+13. ✅ Valid category creation → 200 Success
+14. ✅ Delete empty category → 204 No Content
+
+#### أنواع Exceptions المستخدمة:
+
+**1. EntityNotFoundException (404)**
+```csharp
+throw new EntityNotFoundException(typeof(Product), id);
+```
+
+**2. BusinessException (403)**
+```csharp
+throw new BusinessException(ReferenceDomainErrorCodes.CategoryNotFound)
+    .WithData("CategoryId", input.CategoryId);
+```
+
+**3. Custom Business Exception (403)**
+```csharp
+throw new InsufficientStockException(Name, quantity, Stock);
+```
+
+#### Exception Flow:
+
+```
+Request
+  ↓
+DTO Validation (400 - AbpValidationException)
+  ↓
+Application Service
+  ↓
+Business Rules Check (403 - BusinessException)
+  ↓
+Domain Layer
+  ↓
+Domain Validation (403 - BusinessException)
+  ↓
+Repository
+  ↓
+Entity Not Found? (404 - EntityNotFoundException)
+  ↓
+Success (200/204)
+```
+
+#### الفوائد:
+
+**✅ User Experience:**
+- رسائل خطأ واضحة ومفيدة
+- المستخدم يعرف بالضبط ما هو الخطأ
+- `WithData()` يعطي معلومات إضافية
+
+**✅ Security:**
+- لا تكشف Stack Traces
+- لا تكشف تفاصيل تقنية حساسة
+- Error codes موحدة
+
+**✅ Debugging:**
+- سهولة تتبع الأخطاء
+- Logging تلقائي من ABP
+- Clear error codes
+
+**✅ Consistency:**
+- نفس طريقة معالجة الأخطاء في كل المشروع
+- HTTP Status Codes صحيحة
+- JSON Response موحد
+
+**✅ Multi-layered Validation:**
+- DTO Validation (Data Annotations)
+- Application Validation (Business Rules)
+- Domain Validation (Entity Rules)
+
+#### الملفات المضافة/المعدلة:
+
+**ملفات جديدة:**
+1. `12-exception-handling-guide.md` - دليل شامل
+2. `exception-handling-test-scenarios.md` - 14 test scenario
+3. `InsufficientStockException.cs` - Custom exception
+
+**ملفات معدلة:**
+4. `Product.cs` - Domain validation مع private setters
+5. `ProductAppService.cs` - Business exceptions
+6. `CategoryAppService.cs` - Business exceptions
+
+#### HTTP Status Codes:
+
+| Code | متى يستخدم | Exception Type |
+|------|-----------|---------------|
+| 200 | Success | - |
+| 204 | No Content (Delete) | - |
+| 400 | Validation Error | AbpValidationException |
+| 403 | Business Rule | BusinessException |
+| 404 | Not Found | EntityNotFoundException |
+| 500 | Server Error | Exception |
+
+#### الخلاصة:
+
+✅ **Exception Handling Layer كامل ومطبق**
+✅ **14 Test Scenarios جاهزة**
+✅ **Domain + Application Validation**
+✅ **Clear error messages مع Data**
+✅ **Multi-layered approach**
+✅ **Secure - لا تكشف تفاصيل تقنية**
+✅ **Build نظيف 0 warnings**
+✅ **جاهز للاختبار في Postman!**
+
 ---

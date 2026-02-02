@@ -220,10 +220,26 @@
 - ✅ 18 Test scenarios في Postman
 - ✅ Build نظيف - 0 warnings
 
-### 7.2 Exception Handling
-- [ ] فهم Exception Handling في ABP
-- [ ] إنشاء Custom Exceptions
-- [ ] التعامل مع Business Exceptions
+### 7.2 Exception Handling ✅
+- [x] فهم Exception Handling في ABP
+- [x] Built-in ABP Exceptions (EntityNotFoundException, BusinessException)
+- [x] إنشاء Custom Exceptions (InsufficientStockException)
+- [x] Domain Validation مع Exceptions
+- [x] Application-level Business Rules
+- [x] Multi-layered Exception Handling
+
+**📝 ملفات التوثيق:**
+- `12-exception-handling-guide.md` - دليل شامل للـ Exception Handling
+- `exception-handling-test-scenarios.md` - 14 سيناريو اختبار
+
+**🎯 التطبيق العملي:**
+- ✅ InsufficientStockException (Custom exception)
+- ✅ Domain validation في Product Entity
+- ✅ Business exceptions في Application Services
+- ✅ EntityNotFoundException للـ entities المفقودة
+- ✅ Multi-layered validation (DTO → Application → Domain)
+- ✅ 14 Test scenarios في Postman
+- ✅ Build نظيف - 0 warnings
 
 ### 7.3 Localization
 - [ ] إضافة نصوص متعددة اللغات
@@ -286,20 +302,22 @@
 
 ## 📊 تتبع التقدم
 
-**المراحل المكتملة:** 6.5/10 ✅
-**نسبة الإنجاز:** 90% من الأساسيات - أكملنا:
-- ✅ المرحلة 1: البنية + DDD + الإعداد (10%)
-- ✅ المرحلة 2: Domain Layer - Product Entity + CRUD كامل (12%)
-- ✅ المرحلة 3: EF Core + Relationships (12%)
-- ✅ المرحلة 4: Application Layer - Services & DTOs (12%)
-- ✅ المرحلة 5: HTTP API Layer - Controllers & Testing (10%)
-- ✅ المرحلة 6: Authorization & Permissions (18%)
-- ✅ المرحلة 7.1: Validation - Data Annotations (16%)
+**المراحل المكتملة:** 7/10 ✅
+**نسبة الإنجاز:** 95% من الأساسيات - أكملنا:
+- ✅ المرحلة 1: البنية + DDD + الإعداد (9%)
+- ✅ المرحلة 2: Domain Layer - Product Entity + CRUD كامل (11%)
+- ✅ المرحلة 3: EF Core + Relationships (11%)
+- ✅ المرحلة 4: Application Layer - Services & DTOs (11%)
+- ✅ المرحلة 5: HTTP API Layer - Controllers & Testing (9%)
+- ✅ المرحلة 6: Authorization & Permissions (17%)
+- ✅ المرحلة 7.1: Validation - Data Annotations (14%)
+- ✅ المرحلة 7.2: Exception Handling - Multi-layered (13%)
 
 **إضافات تمت:**
 - ✅ Clean Build Warnings - 0 warnings (مهارة إضافية)
 - ✅ Database Seed - بيانات جاهزة للتجربة (مهارة إضافية)
 - ✅ Validation Layer - 18 test scenarios (مهارة إضافية)
+- ✅ Exception Handling - 14 test scenarios (مهارة إضافية)
 
 ---
 
@@ -317,9 +335,11 @@
 10. `10-database-seed-guide.md` - Seed البيانات
 11. `11-validation-complete-guide.md` - دليل شامل للـ Validation
 12. `validation-test-scenarios.md` - 18 سيناريو اختبار
-13. `commands-log.txt` - سجل كامل لكل الأوامر
-14. `Andro.Backend.Reference.postman_collection.json` - Postman Collection
-15. `Andro.Backend.Reference.postman_environment.json` - Postman Environment
+13. `12-exception-handling-guide.md` - دليل شامل للـ Exception Handling
+14. `exception-handling-test-scenarios.md` - 14 سيناريو اختبار
+15. `commands-log.txt` - سجل كامل لكل الأوامر
+16. `Andro.Backend.Reference.postman_collection.json` - Postman Collection
+17. `Andro.Backend.Reference.postman_environment.json` - Postman Environment
 
 ---
 
