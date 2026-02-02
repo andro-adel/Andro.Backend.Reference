@@ -484,4 +484,212 @@ dotnet run
 ✅ لا حاجة لـ Create manual data
 ✅ Perfect للـ Testing والـ Development
 
+### 14. تطبيق Validation شامل على المشروع
+
+**الملف التوثيقي:** `11-validation-complete-guide.md`
+**Test Scenarios:** `validation-test-scenarios.md`
+
+#### الخطوات:
+
+**1. إنشاء Constants للـ Validation**
+```
+الملفات:
+- src/Andro.Backend.Reference.Domain.Shared/Products/ProductConsts.cs
+- src/Andro.Backend.Reference.Domain.Shared/Categories/CategoryConsts.cs
+```
+
+```csharp
+// ProductConsts.cs
+public static class ProductConsts
+{
+    public const int MaxNameLength = 128;
+    public const int MinNameLength = 3;
+    public const int MaxDescriptionLength = 1000;
+    public const decimal MinPrice = 0.01m;
+    public const decimal MaxPrice = 1000000m;
+    public const int MinStock = 0;
+    public const int MaxStock = 100000;
+}
+```
+
+**2. إضافة Error Codes**
+```csharp
+// ReferenceDomainErrorCodes.cs
+public const string InvalidCategoryName = "Reference:InvalidCategoryName";
+public const string DuplicateCategoryName = "Reference:DuplicateCategoryName";
+public const string InvalidProductPrice = "Reference:InvalidProductPrice";
+public const string InvalidProductStock = "Reference:InvalidProductStock";
+// ... etc
+```
+
+**3. تحسين Product DTOs**
+```csharp
+// CreateProductDto.cs & UpdateProductDto.cs
+[Required(ErrorMessage = "Product name is required")]
+[StringLength(
+    ProductConsts.MaxNameLength,
+    MinimumLength = ProductConsts.MinNameLength,
+    ErrorMessage = "Product name must be between {2} and {1} characters")]
+public string Name { get; set; } = null!;
+
+[Required(ErrorMessage = "Price is required")]
+[Range(
+    typeof(decimal),
+    "0.01",
+    "1000000",
+    ErrorMessage = "Price must be between {1} and {2}")]
+public decimal Price { get; set; }
+
+[Required(ErrorMessage = "Stock quantity is required")]
+[Range(
+    ProductConsts.MinStock,
+    ProductConsts.MaxStock,
+    ErrorMessage = "Stock must be between {1} and {2}")]
+public int Stock { get; set; }
+
+[StringLength(
+    ProductConsts.MaxDescriptionLength,
+    ErrorMessage = "Description cannot exceed {1} characters")]
+public string? Description { get; set; }
+
+[Required(ErrorMessage = "Category is required")]
+public Guid CategoryId { get; set; }
+```
+
+**4. تحسين Category DTOs**
+```csharp
+// CreateCategoryDto.cs & UpdateCategoryDto.cs
+[Required(ErrorMessage = "Category name is required")]
+[StringLength(
+    CategoryConsts.MaxNameLength,
+    MinimumLength = CategoryConsts.MinNameLength,
+    ErrorMessage = "Category name must be between {2} and {1} characters")]
+public string Name { get; set; } = null!;
+
+[StringLength(
+    CategoryConsts.MaxDescriptionLength,
+    ErrorMessage = "Description cannot exceed {1} characters")]
+public string? Description { get; set; }
+```
+
+**5. Build المشروع**
+```powershell
+# إيقاف API إذا كان يعمل
+Get-Process | Where-Object {$_.ProcessName -like '*Andro.Backend.Reference.Web*'} | Stop-Process -Force
+
+# Build
+dotnet build
+```
+
+**النتيجة:**
+```
+Build succeeded.
+    0 Warning(s) ✅
+    0 Error(s) ✅
+Time Elapsed 00:00:15
+```
+
+**6. تشغيل API واختبار Validation**
+```powershell
+cd src\Andro.Backend.Reference.Web
+dotnet run
+```
+
+**API متاح على:** `https://localhost:44309`
+
+#### Test Scenarios (18 سيناريو):
+
+**Postman Tests:**
+1. ❌ Name empty → 400 "Product name is required"
+2. ❌ Name too short (2 chars) → 400 "must be between 3 and 128"
+3. ❌ Name too long (>128) → 400
+4. ❌ Price negative → 400 "Price must be between 0.01 and 1000000"
+5. ❌ Price zero → 400
+6. ❌ Price > 1,000,000 → 400
+7. ❌ Stock negative → 400 "Stock must be between 0 and 100000"
+8. ❌ Stock > 100,000 → 400
+9. ❌ CategoryId missing → 400 "Category is required"
+10. ❌ Description > 1000 chars → 400 "cannot exceed 1000 characters"
+11. ❌ Multiple errors → 400 with multiple validationErrors
+12. ✅ Valid product → 200 Created
+13. ❌ Category name empty → 400
+14. ❌ Category name short → 400
+15. ❌ Category description long → 400 "cannot exceed 512 characters"
+16. ✅ Valid category → 200 Created
+17. ❌ Update invalid → 400
+18. ✅ Update valid → 200 OK
+
+#### الفوائد:
+
+**✅ Data Integrity:**
+- بيانات صحيحة 100% في DB
+- لا يمكن إدخال بيانات فاسدة
+
+**✅ Security:**
+- منع SQL Injection
+- منع invalid input attacks
+
+**✅ User Experience:**
+- رسائل خطأ واضحة ومفيدة
+- المستخدم يعرف بالضبط ما هو الخطأ
+
+**✅ Automatic:**
+- ABP يعمل validation تلقائياً
+- لا حاجة لكتابة كود validation يدوي
+- يعمل على كل Application Service
+
+**✅ Consistent:**
+- نفس قواعد الـ validation في كل المشروع
+- Constants للـ max/min values
+- Error messages موحدة
+
+**✅ Maintainable:**
+- سهل التعديل (Constants)
+- واضح وقابل للقراءة
+- Best practices
+
+#### الملفات المضافة/المعدلة:
+
+**ملفات جديدة:**
+1. `11-validation-complete-guide.md` - دليل شامل
+2. `validation-test-scenarios.md` - 18 test scenario
+3. `ProductConsts.cs` - Constants
+4. `CategoryConsts.cs` - Constants
+
+**ملفات معدلة:**
+5. `ReferenceDomainErrorCodes.cs` - Error codes
+6. `CreateProductDto.cs` - Enhanced validation
+7. `UpdateProductDto.cs` - Enhanced validation
+8. `CreateCategoryDto.cs` - Enhanced validation
+9. `UpdateCategoryDto.cs` - Enhanced validation
+
+#### كيف يعمل ABP Validation:
+
+```
+Request → ABP Interceptor
+          ↓
+      Validate DTO (Data Annotations)
+          ↓
+      Valid? ──No──> Return 400 + validationErrors
+          ↓
+         Yes
+          ↓
+      Execute Application Service
+          ↓
+      Business Validation (if any)
+          ↓
+      Domain Validation
+          ↓
+      Return Response
+```
+
+#### الخلاصة:
+
+✅ **Validation Layer كامل ومطبق**
+✅ **18 Test Scenarios جاهزة**
+✅ **Error Messages واضحة**
+✅ **Constants للـ reusability**
+✅ **Build نظيف 0 warnings**
+✅ **جاهز للاختبار في Postman!**
+
 ---
