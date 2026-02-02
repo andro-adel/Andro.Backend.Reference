@@ -21,7 +21,7 @@ public class ProductAppService : ApplicationService, IProductAppService
     [Authorize(ReferencePermissions.Products.Default)]
     public async Task<ProductDto> GetAsync(Guid id)
     {
-        var product = await _repository.GetAsync(id);
+        var product = await _repository.GetAsync(id, includeDetails: true);
         return MapToDto(product);
     }
 
@@ -29,11 +29,7 @@ public class ProductAppService : ApplicationService, IProductAppService
     public async Task<PagedResultDto<ProductDto>> GetListAsync(PagedAndSortedResultRequestDto input)
     {
         var totalCount = await _repository.GetCountAsync();
-        var products = await _repository.GetPagedListAsync(
-            input.SkipCount,
-            input.MaxResultCount,
-            input.Sorting ?? "Name"
-        );
+        var products = await _repository.GetListAsync(includeDetails: true);
 
         return new PagedResultDto<ProductDto>(
             totalCount,
@@ -49,6 +45,7 @@ public class ProductAppService : ApplicationService, IProductAppService
             input.Name,
             input.Price,
             input.Stock,
+            input.CategoryId,
             input.Description
         );
 
@@ -59,11 +56,12 @@ public class ProductAppService : ApplicationService, IProductAppService
     [Authorize(ReferencePermissions.Products.Edit)]
     public async Task<ProductDto> UpdateAsync(Guid id, UpdateProductDto input)
     {
-        var product = await _repository.GetAsync(id);
+        var product = await _repository.GetAsync(id, includeDetails: true);
 
         product.Name = input.Name;
         product.Price = input.Price;
         product.Stock = input.Stock;
+        product.CategoryId = input.CategoryId;
         product.Description = input.Description;
 
         await _repository.UpdateAsync(product);
@@ -85,6 +83,8 @@ public class ProductAppService : ApplicationService, IProductAppService
             Price = product.Price,
             Stock = product.Stock,
             Description = product.Description,
+            CategoryId = product.CategoryId,
+            CategoryName = product.Category?.Name,
             CreationTime = product.CreationTime,
             CreatorId = product.CreatorId,
             LastModificationTime = product.LastModificationTime,

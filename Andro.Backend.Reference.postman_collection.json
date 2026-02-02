@@ -789,7 +789,12 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"Laptop HP\",\n  \"price\": 15000.00,\n  \"stock\": 10,\n  \"description\": \"Laptop HP Pavilion 15 - Intel Core i7\"\n}"
+							"raw": "{\n  \"name\": \"Laptop HP ProBook\",\n  \"price\": 15000.50,\n  \"stock\": 25,\n  \"categoryId\": \"{{category_id}}\",\n  \"description\": \"Laptop for business use with high performance\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
 							"raw": "{{base_url}}/api/app/product",
@@ -818,7 +823,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"name\": \"Laptop HP - Updated\",\n  \"price\": 14500.00,\n  \"stock\": 15,\n  \"description\": \"Laptop HP Pavilion 15 - Intel Core i7 - Special Offer!\"\n}"
+							"raw": "{\n  \"name\": \"Laptop HP - Updated\",\n  \"price\": 14500.00,\n  \"stock\": 15,\n  \"categoryId\": \"{{category_id}}\",\n  \"description\": \"Laptop HP Pavilion 15 - Intel Core i7 - Special Offer!\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/app/product/:id",
@@ -871,6 +876,171 @@
 				}
 			],
 			"description": "✅ إدارة المنتجات - CRUD كامل"
+		},
+		{
+			"name": "📁 Categories",
+			"item": [
+				{
+					"name": "Get Categories List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/app/category?MaxResultCount=10&SkipCount=0",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"app",
+								"category"
+							],
+							"query": [
+								{
+									"key": "MaxResultCount",
+									"value": "10"
+								},
+								{
+									"key": "SkipCount",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Category By Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/app/category/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"app",
+								"category",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{category_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"category_id\", jsonData.id);",
+									"    console.log(\"✅ Category created: \" + jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Electronics\",\n  \"description\": \"Electronic devices and accessories\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/app/category",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"app",
+								"category"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Category",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Electronics - Updated\",\n  \"description\": \"Updated electronics category\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/app/category/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"app",
+								"category",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{category_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Category",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/app/category/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"app",
+								"category",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{category_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "✅ إدارة التصنيفات - CRUD كامل - One-to-Many مع Products"
 		}
 	],
 	"variable": [

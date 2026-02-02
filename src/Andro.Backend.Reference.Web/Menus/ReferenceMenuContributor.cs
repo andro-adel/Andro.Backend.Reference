@@ -42,21 +42,13 @@ public class ReferenceMenuContributor : IMenuContributor
 
         //Administration->Identity
         administration.SetSubItemOrder(IdentityMenuNames.GroupName, 1);
-    
-        if (MultiTenancyConsts.IsEnabled)
-        {
-            administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 1);
-        }
-        else
-        {
-            administration.TryRemoveMenuItem(TenantManagementMenuNames.GroupName);
-        }
-        
-        administration.SetSubItemOrder(SettingManagementMenuNames.GroupName, 3);
+
+        //Administration->Tenant Management (Multi-tenancy is enabled)
+        administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 1);
 
         //Administration->Settings
-        administration.SetSubItemOrder(SettingManagementMenuNames.GroupName, 8);
-        
+        administration.SetSubItemOrder(SettingManagementMenuNames.GroupName, 3);
+
         return Task.CompletedTask;
     }
 }

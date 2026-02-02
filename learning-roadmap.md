@@ -83,24 +83,35 @@
 
 ---
 
-## 📚 المرحلة الثالثة: Entity Framework Core Integration
+## 📚 المرحلة الثالثة: Entity Framework Core Integration ✅
 
-### 3.1 DbContext Configuration
-- [ ] فهم دور الـ DbContext في ABP
-- [ ] إضافة DbSet للـ Entity الجديدة
-- [ ] فهم الـ ModelCreating وتكوين الـ Tables
+### 3.1 DbContext Configuration ✅
+- [x] فهم دور الـ DbContext في ABP
+- [x] إضافة DbSet للـ Entity الجديدة (Categories)
+- [x] فهم الـ ModelCreating وتكوين الـ Tables
+- [x] Configure Foreign Keys & Indexes
 
-### 3.2 Migrations
-- [ ] إنشاء Migration جديدة
-- [ ] تطبيق Migration على قاعدة البيانات
-- [ ] فهم الـ Data Seeding
-- [ ] إضافة Initial Data
+### 3.2 Migrations ✅
+- [x] إنشاء Migration جديدة
+- [x] تطبيق Migration على قاعدة البيانات
+- [x] فهم الـ Data Seeding
+- [x] إضافة Initial Data (Default Category)
+- [x] Data Migration للبيانات القديمة
 
-### 3.3 Advanced EF Core
-- [ ] فهم الـ Relationships (One-to-Many, Many-to-Many)
-- [ ] استخدام Include & ThenInclude
-- [ ] Query Filtering
-- [ ] Soft Delete
+### 3.3 Advanced EF Core ✅
+- [x] فهم Relationships (One-to-Many: Category → Products)
+- [x] استخدام Include للـ Related Data (`includeDetails: true`)
+- [x] Navigation Properties
+- [x] Delete Behavior (Restrict)
+
+**📝 ملف الشرح:**
+- `08-ef-core-relationships.md` - دليل شامل للعلاقات
+
+**🎯 التطبيق العملي:**
+- ✅ Category Entity كاملة
+- ✅ One-to-Many Relationship
+- ✅ Category CRUD APIs (`/api/app/category`)
+- ✅ Product APIs محدثة بـ CategoryId & CategoryName
 
 ---
 
@@ -243,10 +254,11 @@
 
 ## 📊 تتبع التقدم
 
-**المراحل المكتملة:** 3/10 ✅
-**نسبة الإنجاز:** 60% - أكملنا:
+**المراحل المكتملة:** 4/10 ✅
+**نسبة الإنجاز:** 75% - أكملنا:
 - ✅ المرحلة 1: البنية + DDD + الإعداد (10%)
-- ✅ المرحلة 2: Product Entity + CRUD كامل (30%)
+- ✅ المرحلة 2: Product Entity + CRUD كامل (20%)
+- ✅ المرحلة 3: EF Core + Relationships (25%)
 - ✅ المرحلة 6: Authorization & Permissions (20%)
 
 ---

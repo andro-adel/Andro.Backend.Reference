@@ -1,3 +1,4 @@
+using Andro.Backend.Reference.Categories;
 using Andro.Backend.Reference.Products;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
@@ -29,6 +30,7 @@ public class ReferenceDbContext :
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
 
     public DbSet<Product> Products { get; set; }
+    public DbSet<Category> Categories { get; set; }
 
     #region Entities from the modules
 
@@ -101,6 +103,31 @@ public class ReferenceDbContext :
 
             b.Property(x => x.Description)
                 .HasMaxLength(1000);
+
+            b.HasIndex(p => p.Name);
+
+            b.HasOne(p => p.Category)
+                .WithMany(c => c.Products)
+                .HasForeignKey(p => p.CategoryId)
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            b.HasIndex(p => p.CategoryId);
+        });
+
+        builder.Entity<Category>(b =>
+        {
+            b.ToTable(ReferenceConsts.DbTablePrefix + "Categories", ReferenceConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.Property(x => x.Name)
+                .IsRequired()
+                .HasMaxLength(128);
+
+            b.Property(x => x.Description)
+                .HasMaxLength(512);
+
+            b.HasIndex(c => c.Name);
         });
     }
 }

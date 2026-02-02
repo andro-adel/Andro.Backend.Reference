@@ -36,10 +36,10 @@ public class OpenIddictDataSeedContributor : OpenIddictDataSeedContributorBase, 
 
     private async Task CreateScopesAsync()
     {
-        await CreateScopesAsync(new OpenIddictScopeDescriptor 
+        await CreateScopesAsync(new OpenIddictScopeDescriptor
         {
-            Name = "Reference", 
-            DisplayName = "Reference API", 
+            Name = "Reference",
+            DisplayName = "Reference API",
             Resources = { "Reference" }
         });
     }
@@ -79,15 +79,15 @@ public class OpenIddictDataSeedContributor : OpenIddictDataSeedContributorBase, 
                     "Impersonation"
                 },
                 scopes: commonScopes,
-                redirectUris: new List<string> { consoleAndAngularClientRootUrl },
-                postLogoutRedirectUris: new List<string> { consoleAndAngularClientRootUrl },
-                clientUri: consoleAndAngularClientRootUrl,
+                redirectUris: !string.IsNullOrEmpty(consoleAndAngularClientRootUrl) ? new List<string> { consoleAndAngularClientRootUrl } : new List<string>(),
+                postLogoutRedirectUris: !string.IsNullOrEmpty(consoleAndAngularClientRootUrl) ? new List<string> { consoleAndAngularClientRootUrl } : new List<string>(),
+                clientUri: consoleAndAngularClientRootUrl ?? string.Empty,
                 logoUri: "/images/clients/angular.svg"
             );
         }
 
-        
-        
+
+
 
 
 
@@ -108,7 +108,8 @@ public class OpenIddictDataSeedContributor : OpenIddictDataSeedContributorBase, 
                 grantTypes: new List<string> { OpenIddictConstants.GrantTypes.AuthorizationCode, },
                 scopes: commonScopes,
                 redirectUris: new List<string> { $"{swaggerRootUrl}/swagger/oauth2-redirect.html" },
-                clientUri: swaggerRootUrl.EnsureEndsWith('/') + "swagger",
+                postLogoutRedirectUris: new List<string> { swaggerRootUrl + "/swagger" },
+                clientUri: !string.IsNullOrEmpty(swaggerRootUrl) ? swaggerRootUrl.EnsureEndsWith('/') + "swagger" : string.Empty,
                 logoUri: "/images/clients/swagger.svg"
             );
         }

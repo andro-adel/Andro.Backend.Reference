@@ -211,4 +211,277 @@ dotnet run
 ```
 **النتيجة:** ✅ APIs محمية بـ Permissions
 
+### 11. إضافة Category Entity & EF Core Relationships (المرحلة 3)
+
+**الخطوات:**
+
+#### 1. إنشاء Category Entity
+```
+ملف: src/Andro.Backend.Reference.Domain/Categories/Category.cs
+```
+- FullAuditedAggregateRoot<Guid>
+- Properties: Name, Description
+- Navigation Property: `ICollection<Product> Products`
+
+#### 2. تحديث Product Entity
+```
+ملف: src/Andro.Backend.Reference.Domain/Products/Product.cs
+```
+- إضافة `CategoryId` (Foreign Key)
+- إضافة `Category` (Navigation Property)
+- تحديث Constructor
+
+#### 3. DbContext Configuration
+```
+ملف: src/Andro.Backend.Reference.EntityFrameworkCore/EntityFrameworkCore/ReferenceDbContext.cs
+```
+- إضافة `DbSet<Category> Categories`
+- Configure Category table
+- Configure Relationship:
+  - `HasOne(p => p.Category).WithMany(c => c.Products)`
+  - `HasForeignKey(p => p.CategoryId)`
+  - `OnDelete(DeleteBehavior.Restrict)`
+- Index على CategoryId
+
+#### 4. Migration
+```powershell
+cd src/Andro.Backend.Reference.EntityFrameworkCore
+dotnet ef migrations add "Added_Category_And_Relationship"
+```
+- Create Categories table
+- Insert default category (Uncategorized)
+- Add CategoryId column to Products
+- Update existing products
+- Create indexes and foreign key
+
+```powershell
+dotnet ef database update
+```
+**النتيجة:** ✅ Database محدثة بالعلاقة
+
+#### 5. Category DTOs & Service
+```
+ملفات:
+- Application.Contracts/Categories/CategoryDto.cs
+- Application.Contracts/Categories/CreateCategoryDto.cs
+- Application.Contracts/Categories/UpdateCategoryDto.cs
+- Application.Contracts/Categories/ICategoryAppService.cs
+- Application/Categories/CategoryAppService.cs
+```
+
+#### 6. تحديث Product DTOs
+```
+ملفات محدثة:
+- ProductDto: إضافة CategoryId, CategoryName
+- CreateProductDto: إضافة CategoryId (Required)
+- UpdateProductDto: إضافة CategoryId (Required)
+```
+
+#### 7. تحديث ProductAppService
+- استخدام `includeDetails: true` لتحميل Category
+- تحديث MapToDto لإضافة CategoryName
+
+**الخلاصة:**
+✅ One-to-Many Relationship جاهزة
+✅ Category CRUD APIs
+✅ Product APIs تعرض Category
+✅ Foreign Key Constraints
+✅ Data Migration للبيانات القديمة
+
+#### 8. تحديث Postman Collection
+```
+ملفات:
+- Andro.Backend.Reference.postman_collection.json
+- Andro.Backend.Reference.postman_environment.json
+```
+
+**التحديثات:**
+1. إضافة `category_id` للـ Environment Variables
+2. إضافة Category CRUD APIs:
+   - Get Categories List
+   - Get Category By Id
+   - Create Category (مع auto-save للـ ID)
+   - Update Category
+   - Delete Category
+3. تحديث Product Create/Update ليشمل `categoryId`
+
+**النتيجة:** ✅ Postman Collection كامل ومحدث
+
+### 12. تنظيف المشروع من جميع التحذيرات (28 → 0 Warnings)
+
+**الملف التوثيقي:** `09-clean-build-warnings-guide.md`
+
+#### التحذيرات الأصلية (28):
+- NU1504: Duplicate PackageReference (3)
+- CS8618: Non-nullable property warnings (20)
+- CS8625: Null literal warnings (2)
+- CS8604: Null reference argument (2)
+- CS8601: Null assignment (1)
+- CS0162: Unreachable code (1)
+
+#### الإصلاحات:
+
+**1. NU1504 - Duplicate Package**
+```
+ملف: Andro.Backend.Reference.Web.csproj
+الإصلاح: إزالة السطر المكرر من Microsoft.EntityFrameworkCore.InMemory
+```
+
+**2. DTOs Nullable Warnings (13)**
+```
+الملفات:
+- CategoryDto.cs
+- CreateCategoryDto.cs
+- UpdateCategoryDto.cs
+- ProductDto.cs
+- CreateProductDto.cs
+- UpdateProductDto.cs
+
+الإصلاح:
+- Required fields: = null!
+- Optional fields: string? Description
+```
+
+**3. Entities Nullable Warnings (10)**
+```
+الملفات:
+- Category.cs
+- Product.cs
+
+الإصلاح:
+- Navigation Properties: Category? Category
+- Constructor parameters: string? description = null
+- Protected constructor: Name = string.Empty
+```
+
+**4. Application Service (1)**
+```
+ملف: ProductAppService.cs
+الإصلاح: CategoryName = product.Category?.Name (already fixed)
+```
+
+**5. CS0162 - Unreachable Code (1)**
+```
+ملف: ReferenceMenuContributor.cs:52
+السبب: MultiTenancyConsts.IsEnabled = true (const)
+الإصلاح: إزالة if/else block وترك الكود الصحيح فقط
+```
+
+**6. OpenIddict Null Reference (2)**
+```
+ملف: OpenIddictDataSeedContributor.cs
+الإصلاح: إضافة null checks قبل استخدام القيم
+```
+
+**7. CS7022 - Test SDK Warning (Optional)**
+```
+ملف: Andro.Backend.Reference.Web.Tests.csproj
+الإضافة: <NoWarn>CS7022</NoWarn>
+السبب: لإخفاء warning من Microsoft.NET.Test.SDK
+```
+
+**النتيجة النهائية:**
+```bash
+dotnet build
+# Build succeeded in 4.1s
+# 0 Warning(s) ✅
+# 0 Error(s) ✅
+```
+
+**فوائد المشروع النظيف:**
+✅ Best Practices متبعة
+✅ Nullable Reference Types صح
+✅ Production-Ready Code
+✅ No Runtime Surprises
+✅ Maintainable & Clean
+
+### 13. إعادة بناء قاعدة البيانات مع Seed كامل
+
+**الملف التوثيقي:** `10-database-seed-guide.md`
+
+#### الخطوات:
+
+**1. إنشاء ReferenceDataSeedContributor**
+```
+الملف: src/Andro.Backend.Reference.Domain/Data/ReferenceDataSeedContributor.cs
+المحتوى:
+- 5 Categories (Electronics, Clothing, Books, Home & Garden, Sports)
+- 15 Products (3 لكل Category)
+- GUIDs ثابتة للـ Categories
+```
+
+**2. حذف قاعدة البيانات**
+```powershell
+sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "DROP DATABASE [Reference]"
+```
+
+**3. تشغيل DbMigrator**
+```powershell
+cd src\Andro.Backend.Reference.DbMigrator
+dotnet run
+```
+
+**النتيجة:**
+```
+[02:54:06 INF] Started database migrations...
+[02:54:06 INF] Migrating schema for host database...
+[02:54:08 INF] Executing host database seed...
+[02:54:10 INF] Successfully completed host database migrations.
+```
+
+**4. البيانات المتوفرة:**
+
+**Categories (5):**
+- Electronics: `3a071c15-6b5c-4c5e-9c1e-1c1f1c1f1c1f`
+- Clothing: `4b182d26-7c6d-5d6f-0d2f-2d2a2d2a2d2a`
+- Books: `5c293e37-8d7e-6e7a-1e3a-3e3b3e3b3e3b`
+- Home & Garden: `6d3a4f48-9e8f-7f8b-2f4b-4f4c4f4c4f4c`
+- Sports: `7e4b5a59-0f9a-8a9c-3a5c-5a5d5a5d5a5d`
+
+**Products (15):**
+- Laptop Pro 15 - $1,299.99
+- Wireless Mouse - $29.99
+- USB-C Hub - $49.99
+- Cotton T-Shirt - $19.99
+- Denim Jeans - $59.99
+- Winter Jacket - $89.99
+- Clean Code - $45.99
+- Design Patterns - $54.99
+- The Pragmatic Programmer - $42.99
+- Garden Tool Set - $79.99
+- LED Desk Lamp - $34.99
+- Plant Pot Set - $24.99
+- Yoga Mat - $29.99
+- Resistance Bands Set - $24.99
+- Running Shoes - $79.99
+
+**Admin User:**
+- Username: `admin`
+- Email: `admin@abp.io`
+- Password: `1q2w3E*`
+
+**5. تحديث Postman Environment**
+```json
+{
+  "category_id": "3a071c15-6b5c-4c5e-9c1e-1c1f1c1f1c1f"
+}
+```
+
+**6. الاستخدام الفوري في Postman:**
+```
+✅ Login → Get Token
+✅ Get Categories → 5 results
+✅ Get Products → 15 results
+✅ Get Category by ID → Electronics
+✅ Get Products by Category → 3 Electronics products
+```
+
+**الفوائد:**
+✅ Database جاهزة من الصفر
+✅ بيانات تجريبية واقعية
+✅ IDs ثابتة للـ Categories
+✅ Postman جاهز للاستخدام الفوري
+✅ لا حاجة لـ Create manual data
+✅ Perfect للـ Testing والـ Development
+
 ---
