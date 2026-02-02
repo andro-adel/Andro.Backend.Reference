@@ -9,6 +9,7 @@ using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Entities;
 using Volo.Abp.Domain.Repositories;
+using Volo.Abp.EventBus.Local;
 
 namespace Andro.Backend.Reference.Products;
 
@@ -16,13 +17,16 @@ public class ProductAppService : ApplicationService, IProductAppService
 {
     private readonly IRepository<Product, Guid> _repository;
     private readonly IRepository<Category, Guid> _categoryRepository;
+    private readonly ILocalEventBus _localEventBus;
 
     public ProductAppService(
         IRepository<Product, Guid> repository,
-        IRepository<Category, Guid> categoryRepository)
+        IRepository<Category, Guid> categoryRepository,
+        ILocalEventBus localEventBus)
     {
         _repository = repository;
         _categoryRepository = categoryRepository;
+        _localEventBus = localEventBus;
     }
 
     [Authorize(ReferencePermissions.Products.Default)]
@@ -81,6 +85,18 @@ public class ProductAppService : ApplicationService, IProductAppService
         );
 
         await _repository.InsertAsync(product);
+
+        // Publish ProductCreatedEvent
+        await _localEventBus.PublishAsync(
+            new ProductCreatedEvent(
+                product.Id,
+                product.Name,
+                product.Price,
+                product.Stock,
+                product.CategoryId
+            )
+        );
+
         return MapToDto(product);
     }
 

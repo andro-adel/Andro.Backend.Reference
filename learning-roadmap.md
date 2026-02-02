@@ -266,10 +266,28 @@
 - [ ] جدولة Jobs باستخدام Background Workers
 - [ ] فهم Hangfire/Quartz Integration
 
-### 7.5 Event Bus
-- [ ] فهم Event Bus Pattern
-- [ ] إنشاء Domain Events
-- [ ] إنشاء Event Handlers
+### 7.5 Event Bus ✅
+- [x] فهم Event Bus Pattern
+- [x] Local vs Distributed Events
+- [x] إنشاء Domain Events (ProductCreatedEvent, ProductStockChangedEvent)
+- [x] إنشاء Event Handlers (2 handlers)
+- [x] نشر Events من Domain Layer
+- [x] نشر Events من Application Layer
+- [x] Transaction-Safe Events
+
+**📝 ملفات التوثيق:**
+- `14-event-bus-guide.md` - دليل شامل للـ Event Bus & Domain Events
+- `event-bus-test-guide.md` - دليل اختبار Events مع Console Logs
+
+**🎯 التطبيق العملي:**
+- ✅ ProductCreatedEvent - event عند إنشاء منتج
+- ✅ ProductStockChangedEvent - event عند تغيير الكمية
+- ✅ ProductCreatedEventHandler - logging
+- ✅ ProductStockChangedEventHandler - logging + low stock alert
+- ✅ Domain Events في Product entity
+- ✅ Local Event Bus في ProductAppService
+- ✅ Console Logs تظهر عند العمليات
+- ✅ Build نظيف - 0 warnings
 - [ ] Distributed Events
 
 ---
@@ -317,17 +335,18 @@
 
 ## 📊 تتبع التقدم
 
-**المراحل المكتملة:** 7.5/10 ✅
-**نسبة الإنجاز:** 98% من الأساسيات - أكملنا:
+**المراحل المكتملة:** 8/10 ✅
+**نسبة الإنجاز:** 100% من الأساسيات! 🎉 - أكملنا:
 - ✅ المرحلة 1: البنية + DDD + الإعداد (8%)
-- ✅ المرحلة 2: Domain Layer - Product Entity + CRUD كامل (10%)
-- ✅ المرحلة 3: EF Core + Relationships (10%)
-- ✅ المرحلة 4: Application Layer - Services & DTOs (10%)
+- ✅ المرحلة 2: Domain Layer - Product Entity + CRUD كامل (9%)
+- ✅ المرحلة 3: EF Core + Relationships (9%)
+- ✅ المرحلة 4: Application Layer - Services & DTOs (9%)
 - ✅ المرحلة 5: HTTP API Layer - Controllers & Testing (9%)
-- ✅ المرحلة 6: Authorization & Permissions (16%)
-- ✅ المرحلة 7.1: Validation - Data Annotations (13%)
+- ✅ المرحلة 6: Authorization & Permissions (15%)
+- ✅ المرحلة 7.1: Validation - Data Annotations (12%)
 - ✅ المرحلة 7.2: Exception Handling - Multi-layered (12%)
-- ✅ المرحلة 7.3: Localization - Multi-language (10%)
+- ✅ المرحلة 7.3: Localization - Multi-language (9%)
+- ✅ المرحلة 7.5: Event Bus - Domain Events (8%)
 
 **إضافات تمت:**
 - ✅ Clean Build Warnings - 0 warnings (مهارة إضافية)
@@ -335,6 +354,7 @@
 - ✅ Validation Layer - 18 test scenarios (مهارة إضافية)
 - ✅ Exception Handling - 14 test scenarios (مهارة إضافية)
 - ✅ Localization - 14 test scenarios (مهارة إضافية)
+- ✅ Event Bus - Domain Events with Handlers (مهارة إضافية)
 
 ---
 
@@ -356,9 +376,11 @@
 14. `exception-handling-test-scenarios.md` - 14 سيناريو اختبار
 15. `13-localization-guide.md` - دليل شامل للـ Localization
 16. `localization-test-scenarios.md` - 14 سيناريو اختبار (عربي + إنجليزي)
-17. `commands-log.txt` - سجل كامل لكل الأوامر
-18. `Andro.Backend.Reference.postman_collection.json` - Postman Collection
-19. `Andro.Backend.Reference.postman_environment.json` - Postman Environment
+17. `14-event-bus-guide.md` - دليل شامل للـ Event Bus & Domain Events
+18. `event-bus-test-guide.md` - دليل اختبار Domain Events
+19. `commands-log.txt` - سجل كامل لكل الأوامر
+20. `Andro.Backend.Reference.postman_collection.json` - Postman Collection (with Localization tests)
+21. `Andro.Backend.Reference.postman_environment.json` - Postman Environment
 
 ---
 

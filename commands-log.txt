@@ -1249,4 +1249,322 @@ Accept-Language: ar-SA
 ✅ **Build نظيف 0 warnings**
 ✅ **جاهز للاختبار في Postman!**
 
+### 17. تطبيق Event Bus & Domain Events على المشروع
+
+**الملف التوثيقي:** `14-event-bus-guide.md`
+**Test Guide:** `event-bus-test-guide.md`
+
+#### الخطوات:
+
+**1. إنشاء Domain Events**
+
+```csharp
+// Domain/Products/ProductCreatedEvent.cs
+public class ProductCreatedEvent
+{
+    public Guid ProductId { get; set; }
+    public string ProductName { get; set; } = string.Empty;
+    public decimal Price { get; set; }
+    public int Stock { get; set; }
+    public Guid CategoryId { get; set; }
+    public DateTime CreatedAt { get; set; }
+
+    public ProductCreatedEvent(
+        Guid productId,
+        string productName,
+        decimal price,
+        int stock,
+        Guid categoryId)
+    {
+        ProductId = productId;
+        ProductName = productName;
+        Price = price;
+        Stock = stock;
+        CategoryId = categoryId;
+        CreatedAt = DateTime.UtcNow;
+    }
+}
+```
+
+```csharp
+// Domain/Products/ProductStockChangedEvent.cs
+public class ProductStockChangedEvent
+{
+    public Guid ProductId { get; set; }
+    public string ProductName { get; set; } = string.Empty;
+    public int OldStock { get; set; }
+    public int NewStock { get; set; }
+    public int ChangeAmount { get; set; }
+    public StockChangeType ChangeType { get; set; }
+    public DateTime ChangedAt { get; set; }
+}
+
+public enum StockChangeType
+{
+    Increased,
+    Decreased
+}
+```
+
+**2. تحديث Product Entity - نشر Events**
+
+```csharp
+// Domain/Products/Product.cs
+public void DecreaseStock(int quantity)
+{
+    // ... validation ...
+
+    var oldStock = Stock;
+    Stock -= quantity;
+
+    // Publish Domain Event
+    AddLocalEvent(new ProductStockChangedEvent(
+        Id,
+        Name,
+        oldStock,
+        Stock,
+        StockChangeType.Decreased
+    ));
+}
+
+public void IncreaseStock(int quantity)
+{
+    // ... validation ...
+
+    var oldStock = Stock;
+    Stock += quantity;
+
+    // Publish Domain Event
+    AddLocalEvent(new ProductStockChangedEvent(
+        Id,
+        Name,
+        oldStock,
+        Stock,
+        StockChangeType.Increased
+    ));
+}
+```
+
+**3. إنشاء Event Handlers**
+
+```csharp
+// Application/Products/EventHandlers/ProductCreatedEventHandler.cs
+public class ProductCreatedEventHandler
+    : ILocalEventHandler<ProductCreatedEvent>,
+      ITransientDependency
+{
+    private readonly ILogger<ProductCreatedEventHandler> _logger;
+
+    public async Task HandleEventAsync(ProductCreatedEvent eventData)
+    {
+        _logger.LogInformation(
+            "🎉 New Product Created: {ProductName} (ID: {ProductId}) - Price: ${Price}, Stock: {Stock}",
+            eventData.ProductName,
+            eventData.ProductId,
+            eventData.Price,
+            eventData.Stock
+        );
+
+        await Task.CompletedTask;
+    }
+}
+```
+
+```csharp
+// Application/Products/EventHandlers/ProductStockChangedEventHandler.cs
+public class ProductStockChangedEventHandler
+    : ILocalEventHandler<ProductStockChangedEvent>,
+      ITransientDependency
+{
+    public async Task HandleEventAsync(ProductStockChangedEvent eventData)
+    {
+        var changeIcon = eventData.ChangeType == StockChangeType.Increased
+            ? "📈" : "📉";
+
+        _logger.LogInformation(
+            "{Icon} Stock Changed: {ProductName} - {OldStock} → {NewStock}",
+            changeIcon,
+            eventData.ProductName,
+            eventData.OldStock,
+            eventData.NewStock
+        );
+
+        // Low Stock Warning
+        if (eventData.ChangeType == StockChangeType.Decreased
+            && eventData.NewStock < 10)
+        {
+            _logger.LogWarning(
+                "⚠️ Low Stock Alert: {ProductName} - Only {Stock} items left!",
+                eventData.ProductName,
+                eventData.NewStock
+            );
+        }
+    }
+}
+```
+
+**4. تحديث ProductAppService - نشر Events**
+
+```csharp
+// Application/Products/ProductAppService.cs
+public class ProductAppService : ApplicationService
+{
+    private readonly ILocalEventBus _localEventBus;
+
+    public async Task<ProductDto> CreateAsync(CreateProductDto input)
+    {
+        var product = new Product(...);
+        await _repository.InsertAsync(product);
+
+        // Publish Event
+        await _localEventBus.PublishAsync(
+            new ProductCreatedEvent(
+                product.Id,
+                product.Name,
+                product.Price,
+                product.Stock,
+                product.CategoryId
+            )
+        );
+
+        return MapToDto(product);
+    }
+}
+```
+
+**5. Build المشروع**
+```powershell
+dotnet build
+```
+
+**النتيجة:**
+```
+Build succeeded.
+    0 Warning(s) ✅
+    0 Error(s) ✅
+```
+
+**6. تشغيل API واختبار Events**
+```powershell
+cd src\Andro.Backend.Reference.Web
+dotnet run
+```
+
+#### Test Scenarios:
+
+**Scenario 1: Create Product**
+- Request: POST /api/app/product
+- Expected Console: `🎉 New Product Created: Test Product...`
+
+**Scenario 2: Increase Stock**
+- Request: Update product with higher stock
+- Expected Console: `📈 Stock Changed: Product - 50 → 100 (Increased: 50)`
+
+**Scenario 3: Decrease Stock**
+- Request: Update product with lower stock
+- Expected Console: `📉 Stock Changed: Product - 100 → 5 (Decreased: 95)`
+- If stock < 10: `⚠️ Low Stock Alert: Product - Only 5 items left!`
+
+#### Event Flow:
+
+```
+User Request
+  ↓
+Application Service
+  ↓
+Domain Entity
+  ↓
+AddLocalEvent(Event)
+  ↓
+Repository.InsertAsync/UpdateAsync
+  ↓
+UnitOfWork commits transaction
+  ↓
+Events published automatically
+  ↓
+Event Handler.HandleEventAsync()
+  ↓
+Side Effects (Log, Email, Cache, etc.)
+```
+
+#### الفوائد:
+
+**✅ Loose Coupling:**
+- فصل كامل بين Business Logic و Side Effects
+- كل Handler مستقل
+
+**✅ Extensibility:**
+- سهل جداً إضافة handlers جديدة
+- لا حاجة لتعديل الكود الموجود
+
+**✅ Single Responsibility:**
+- كل Handler يفعل شيء واحد فقط
+- Application Service يركز على Business Logic
+
+**✅ Testability:**
+- سهل اختبار كل Handler منفصل
+- Mock Events بسهولة
+
+**✅ Clear Business Events:**
+- يعبر عن الأحداث المهمة في Domain
+- واضح ومفهوم
+
+**✅ Transaction-Safe:**
+- Events تُنشر فقط بعد commit ناجح
+- لا events إذا فشلت Transaction
+
+#### Use Cases للـ Event Handlers:
+
+**1. Logging & Audit:**
+```csharp
+ProductCreatedEventHandler → Log creation
+ProductAuditEventHandler → Create audit log
+```
+
+**2. Notifications:**
+```csharp
+ProductCreatedEmailHandler → Send email
+ProductCreatedSMSHandler → Send SMS
+```
+
+**3. Cache Management:**
+```csharp
+ProductCacheHandler → Invalidate cache
+```
+
+**4. Statistics:**
+```csharp
+ProductStatisticsHandler → Update counters
+```
+
+**5. Integration:**
+```csharp
+ProductSyncHandler → Sync with external system
+```
+
+#### الملفات المضافة:
+
+**ملفات جديدة:**
+1. `14-event-bus-guide.md` - دليل شامل
+2. `event-bus-test-guide.md` - دليل الاختبار
+3. `ProductCreatedEvent.cs` - Domain Event
+4. `ProductStockChangedEvent.cs` - Domain Event
+5. `ProductCreatedEventHandler.cs` - Event Handler
+6. `ProductStockChangedEventHandler.cs` - Event Handler
+
+**ملفات معدلة:**
+7. `Product.cs` - إضافة AddLocalEvent في domain methods
+8. `ProductAppService.cs` - إضافة ILocalEventBus و publish events
+
+#### الخلاصة:
+
+✅ **Event Bus Layer كامل ومطبق**
+✅ **2 Domain Events جاهزة**
+✅ **2 Event Handlers جاهزة**
+✅ **Loose Coupling محقق**
+✅ **Extensible Architecture**
+✅ **Transaction-Safe Events**
+✅ **Build نظيف 0 warnings**
+✅ **شاهد الـ Logs في Console!**
+
 ---

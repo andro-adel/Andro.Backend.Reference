@@ -87,7 +87,16 @@ public class Product : FullAuditedAggregateRoot<Guid>
             throw new InsufficientStockException(Name, quantity, Stock);
         }
 
+        var oldStock = Stock;
         Stock -= quantity;
+
+        AddLocalEvent(new ProductStockChangedEvent(
+            Id,
+            Name,
+            oldStock,
+            Stock,
+            StockChangeType.Decreased
+        ));
     }
 
     public void IncreaseStock(int quantity)
@@ -98,6 +107,15 @@ public class Product : FullAuditedAggregateRoot<Guid>
                 .WithData("Quantity", quantity);
         }
 
+        var oldStock = Stock;
         Stock += quantity;
+
+        AddLocalEvent(new ProductStockChangedEvent(
+            Id,
+            Name,
+            oldStock,
+            Stock,
+            StockChangeType.Increased
+        ));
     }
 }
